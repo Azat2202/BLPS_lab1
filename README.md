@@ -21,3 +21,7 @@
 
 # Swagger 
 Находится по ссылке http://localhost:8080/swagger-ui/index.html
+
+# BPMN 
+
+![bpmn.png](img/bpmn.png)
