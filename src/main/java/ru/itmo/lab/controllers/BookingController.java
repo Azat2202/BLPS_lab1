@@ -10,21 +10,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itmo.lab.dto.requests.BookingRequestDTO;
 import ru.itmo.lab.dto.responses.BookingResponseDTO;
-import ru.itmo.lab.models.Booking;
-import ru.itmo.lab.repositories.BookingRepository;
-import ru.itmo.lab.repositories.UserRepository;
 import ru.itmo.lab.services.BookingService;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/booking")
-@Tag(name = "BookingController", description = "Контроллер для управлениями заявками на бронирование")
+@RequiredArgsConstructor
+@Tag(name = "BookingController", description = "Контроллер для управлением заявками на бронирование")
 public class BookingController {
-private final BookingRepository bookingRepository;
 	private final BookingService bookingService;
 
 	@PostMapping("/create")
-	@Operation(summary = "Создать новую заявку на бронирование")
+	@Operation(summary = "Создать бронирование", description = "Создаёт новую заявку на бронирование")
 	public ResponseEntity<BookingResponseDTO> createBooking(@RequestBody BookingRequestDTO bookingRequestDTO) {
 		BookingResponseDTO createdBooking = bookingService.createBooking(bookingRequestDTO);
 		return ResponseEntity.ok(createdBooking);
