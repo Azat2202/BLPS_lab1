@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itmo.lab.dto.requests.BookingRequestDTO;
 import ru.itmo.lab.dto.responses.BookingResponseDTO;
+import ru.itmo.lab.dto.responses.PaymentResponseDTO;
 import ru.itmo.lab.services.BookingService;
+import ru.itmo.lab.services.PaymentService;
 
 @RestController
 @RequestMapping("/api/booking")
@@ -18,17 +20,22 @@ import ru.itmo.lab.services.BookingService;
 @Tag(name = "BookingController", description = "Контроллер для управлением заявками на бронирование")
 public class BookingController {
 	private final BookingService bookingService;
+	private final PaymentService paymentService;
 
 	@PostMapping("/create")
 	@Operation(summary = "Создать бронирование", description = "Создаёт новую заявку на бронирование")
 	public ResponseEntity<?> createBooking(@RequestBody BookingRequestDTO bookingRequestDTO) {
 		try {
 			BookingResponseDTO createdBooking = bookingService.createBooking(bookingRequestDTO);
+			
 			boolean isFree = bookingService.checkRoomBooking(createdBooking);
 			if (!isFree) {
 				throw new IllegalArgumentException("Room is unavailable for the selected period");
 			}
-			return ResponseEntity.ok(createdBooking);
+			
+			PaymentResponseDTO createdPayment = paymentService.createPayment(createdBooking);
+			
+			return ResponseEntity.ok(createdPayment);
 		} catch (IllegalArgumentException exception) {
 			return ResponseEntity.badRequest().body(exception.getMessage());
 		}
