@@ -2,6 +2,7 @@ package ru.itmo.lab.services;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.itmo.lab.dto.requests.BookingRequestDTO;
 import ru.itmo.lab.dto.responses.BookingResponseDTO;
@@ -22,7 +23,7 @@ public class BookingService {
 	private final ModelMapper modelMapper;
 	
 	public BookingResponseDTO createBooking(BookingRequestDTO bookingRequestDTO) {
-		String username = "";
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		User user = userRepository.findByUsername(username);
 		
 		Room room = roomRepository.findById(bookingRequestDTO.getRoomId())
