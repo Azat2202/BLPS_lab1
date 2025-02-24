@@ -21,9 +21,12 @@ public class Booking {
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private User user;
-
+    
     @Column(nullable = false)
-    private LocalDate date;
+    private LocalDate startDate;
+    
+    @Column(nullable = false)
+    private LocalDate endDate;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Room room;

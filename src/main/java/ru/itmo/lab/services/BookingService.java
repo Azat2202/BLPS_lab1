@@ -32,7 +32,8 @@ public class BookingService {
 		Booking booking = Booking.builder()
 				.user(user)
 				.room(room)
-				.date(bookingRequestDTO.getDate())
+				.startDate(bookingRequestDTO.getStartDate())
+				.endDate(bookingRequestDTO.getEndDate())
 				.status(BookingStatus.CREATED)
 				.build();
 		

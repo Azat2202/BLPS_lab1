@@ -7,5 +7,6 @@ import java.time.LocalDate;
 @Data
 public class BookingRequestDTO {
 	private Long roomId;
-	private LocalDate date;
+	private LocalDate startDate;
+	private LocalDate endDate;
 }
