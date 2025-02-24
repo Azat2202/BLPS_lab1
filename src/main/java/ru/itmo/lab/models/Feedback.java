@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.itmo.lab.models.enums.FeedbackRating;
 
 @Entity
 @Data
@@ -27,6 +26,5 @@ public class Feedback {
     private String text;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private FeedbackRating rating;
+    private Integer rating;
 }

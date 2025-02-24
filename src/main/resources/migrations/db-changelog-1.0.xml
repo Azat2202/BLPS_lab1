@@ -20,8 +20,6 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-    </changeSet>
-    <changeSet id="1739919935985-2" author="azat222">
         <createTable tableName="feedback">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_feedback"/>
@@ -35,12 +33,10 @@
             <column name="text" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="rating" type="VARCHAR(255)">
+            <column name="rating" type="INT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
-    </changeSet>
-    <changeSet id="1739919935985-3" author="azat222">
         <createTable tableName="hotel">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_hotel"/>
@@ -57,12 +53,8 @@
             <column name="address" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="rating" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="rating" type="int"/>
         </createTable>
-    </changeSet>
-    <changeSet id="1739919935985-4" author="azat222">
         <createTable tableName="hotel_rooms">
             <column name="hotel_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -71,8 +63,6 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-    </changeSet>
-    <changeSet id="1739919935985-5" author="azat222">
         <createTable tableName="room">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_room"/>
@@ -88,9 +78,7 @@
             </column>
             <column name="hotel_id" type="BIGINT"/>
         </createTable>
-    </changeSet>
-    <changeSet id="1739919935985-6" author="azat222">
-        <createTable tableName="user">
+        <createTable tableName="application_users">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user"/>
             </column>
@@ -103,8 +91,6 @@
             <column name="passport_number" type="VARCHAR(255)"/>
             <column name="phone_number" type="VARCHAR(255)"/>
         </createTable>
-    </changeSet>
-    <changeSet id="1739919935985-7" author="azat222">
         <createTable tableName="user_bookings">
             <column name="user_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -113,60 +99,50 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-    </changeSet>
-    <changeSet id="1739919935985-8" author="azat222">
         <addUniqueConstraint columnNames="name" constraintName="uc_hotel_name" tableName="hotel"/>
-    </changeSet>
-    <changeSet id="1739919935985-9" author="azat222">
         <addUniqueConstraint columnNames="rooms_id" constraintName="uc_hotel_rooms_rooms" tableName="hotel_rooms"/>
-    </changeSet>
-    <changeSet id="1739919935985-10" author="azat222">
         <addUniqueConstraint columnNames="bookings_id" constraintName="uc_user_bookings_bookings"
                              tableName="user_bookings"/>
-    </changeSet>
-    <changeSet id="1739919935985-11" author="azat222">
-        <addUniqueConstraint columnNames="username" constraintName="uc_user_username" tableName="user"/>
-    </changeSet>
-    <changeSet id="1739919935985-12" author="azat222">
+        <addUniqueConstraint columnNames="username" constraintName="uc_user_username" tableName="application_users"/>
         <addForeignKeyConstraint baseColumnNames="room_id" baseTableName="booking" constraintName="FK_BOOKING_ON_ROOM"
                                  referencedColumnNames="id" referencedTableName="room"/>
-    </changeSet>
-    <changeSet id="1739919935985-13" author="azat222">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="booking" constraintName="FK_BOOKING_ON_USER"
-                                 referencedColumnNames="id" referencedTableName="user"/>
-    </changeSet>
-    <changeSet id="1739919935985-14" author="azat222">
+                                 referencedColumnNames="id" referencedTableName="application_users"/>
         <addForeignKeyConstraint baseColumnNames="hotel_id" baseTableName="feedback"
                                  constraintName="FK_FEEDBACK_ON_HOTEL" referencedColumnNames="id"
                                  referencedTableName="hotel"/>
-    </changeSet>
-    <changeSet id="1739919935985-15" author="azat222">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="feedback" constraintName="FK_FEEDBACK_ON_USER"
-                                 referencedColumnNames="id" referencedTableName="user"/>
-    </changeSet>
-    <changeSet id="1739919935985-16" author="azat222">
+                                 referencedColumnNames="id" referencedTableName="application_users"/>
         <addForeignKeyConstraint baseColumnNames="hotel_id" baseTableName="room" constraintName="FK_ROOM_ON_HOTEL"
                                  referencedColumnNames="id" referencedTableName="hotel"/>
-    </changeSet>
-    <changeSet id="1739919935985-17" author="azat222">
         <addForeignKeyConstraint baseColumnNames="hotel_id" baseTableName="hotel_rooms"
                                  constraintName="fk_hotroo_on_hotel" referencedColumnNames="id"
                                  referencedTableName="hotel"/>
-    </changeSet>
-    <changeSet id="1739919935985-18" author="azat222">
         <addForeignKeyConstraint baseColumnNames="rooms_id" baseTableName="hotel_rooms"
                                  constraintName="fk_hotroo_on_room" referencedColumnNames="id"
                                  referencedTableName="room"/>
-    </changeSet>
-    <changeSet id="1739919935985-19" author="azat222">
         <addForeignKeyConstraint baseColumnNames="bookings_id" baseTableName="user_bookings"
                                  constraintName="fk_useboo_on_booking" referencedColumnNames="id"
                                  referencedTableName="booking"/>
-    </changeSet>
-    <changeSet id="1739919935985-20" author="azat222">
         <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_bookings"
                                  constraintName="fk_useboo_on_user" referencedColumnNames="id"
-                                 referencedTableName="user"/>
-    </changeSet>
+                                 referencedTableName="application_users"/>
+        <rollback>
+            <sql>
+                drop table feedback cascade;
 
+                drop table hotel_rooms cascade;
+
+                drop table user_bookings cascade;
+
+                drop table booking cascade;
+
+                drop table room cascade;
+
+                drop table hotel cascade;
+
+                drop table application_users cascade;
+            </sql>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>

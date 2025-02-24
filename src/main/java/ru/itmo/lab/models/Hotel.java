@@ -1,11 +1,12 @@
 package ru.itmo.lab.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.itmo.lab.models.enums.HotelRating;
+import ru.itmo.lab.models.enums.City;
 
 import java.util.List;
 
@@ -26,15 +27,16 @@ public class Hotel {
     private String description;
 
     @Column(nullable = false)
-    private String city;
+    @Enumerated(EnumType.STRING)
+    private City city;
 
     @Column(nullable = false)
     private String address;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "hotel")
+    @JsonIgnore
     private List<Room> rooms;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private HotelRating rating;
+    @Column
+    private Integer rating;
 }
