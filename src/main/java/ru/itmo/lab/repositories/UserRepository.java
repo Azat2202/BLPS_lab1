@@ -6,5 +6,6 @@ import ru.itmo.lab.models.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-
+	
+	User findByUsername(String username);
 }
