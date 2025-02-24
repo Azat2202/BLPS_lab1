@@ -1,6 +1,7 @@
 package ru.itmo.lab.services;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.NonUniqueResultException;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,10 @@ import ru.itmo.lab.models.enums.BookingStatus;
 import ru.itmo.lab.repositories.BookingRepository;
 import ru.itmo.lab.repositories.RoomRepository;
 import ru.itmo.lab.repositories.UserRepository;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -39,5 +44,25 @@ public class BookingService {
 		
 		booking = bookingRepository.save(booking);
 		return modelMapper.map(booking, BookingResponseDTO.class);
+	}
+	
+	public boolean checkRoomBooking(BookingResponseDTO bookingResponseDTO) {
+		LocalDate startDate = bookingResponseDTO.getStartDate();
+		LocalDate endDate = bookingResponseDTO.getEndDate();
+		
+		Room room = bookingResponseDTO.getRoom();
+		
+		while (!startDate.isAfter(endDate)) {
+			
+			List<Booking> bookings = bookingRepository.findAllByRoomAndStartDateLessThanEqualAndEndDateGreaterThanEqual(room, startDate, endDate);
+			for (Booking booking: bookings) {
+				if (booking != null && booking.getStatus() == BookingStatus.CREATED && !Objects.equals(booking.getId(), bookingResponseDTO.getId())) {
+					return false;
+				}
+			}
+			
+			startDate = startDate.plusDays(1);
+		}
+		return true;
 	}
 }

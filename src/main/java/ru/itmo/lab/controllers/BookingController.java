@@ -21,8 +21,16 @@ public class BookingController {
 
 	@PostMapping("/create")
 	@Operation(summary = "Создать бронирование", description = "Создаёт новую заявку на бронирование")
-	public ResponseEntity<BookingResponseDTO> createBooking(@RequestBody BookingRequestDTO bookingRequestDTO) {
-		BookingResponseDTO createdBooking = bookingService.createBooking(bookingRequestDTO);
-		return ResponseEntity.ok(createdBooking);
+	public ResponseEntity<?> createBooking(@RequestBody BookingRequestDTO bookingRequestDTO) {
+		try {
+			BookingResponseDTO createdBooking = bookingService.createBooking(bookingRequestDTO);
+			boolean isFree = bookingService.checkRoomBooking(createdBooking);
+			if (!isFree) {
+				throw new IllegalArgumentException("Room is unavailable for the selected period");
+			}
+			return ResponseEntity.ok(createdBooking);
+		} catch (IllegalArgumentException exception) {
+			return ResponseEntity.badRequest().body(exception.getMessage());
+		}
 	}
 }
