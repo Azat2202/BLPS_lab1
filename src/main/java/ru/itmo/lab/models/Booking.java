@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.itmo.lab.models.enums.BookingStatus;
 
 import java.time.LocalDate;
 
@@ -26,4 +27,8 @@ public class Booking {
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private Room room;
+    
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status;
 }
