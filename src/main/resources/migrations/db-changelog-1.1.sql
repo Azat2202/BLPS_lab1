@@ -1,9 +1,9 @@
-INSERT INTO hotel (id, name, description, city, address)
-VALUES (1, 'Гранд Отель Москва', 'Роскошный 5-звездочный отель в центре Москвы', 'MOSCOW', 'ул. Тверская, 10'),
-       (2, 'Питер Палас', 'Уютный отель с видом на Неву', 'SAINT_PETERSBURG', 'Невский проспект, 45'),
-       (3, 'Казань Инн', 'Современный отель в Казани', 'KAZAN', 'ул. Баумана, 88'),
-       (4, 'Сибирь Резорт', 'Горный курорт в сердце Сибири', 'NOVOSIBIRSK', 'ул. Ленина, 15'),
-       (5, 'Сочи Спа Отель', 'Лучший курортный отель на Черном море', 'SOCHI', 'ул. Пляжная, 5');
+INSERT INTO hotel (id, name, description, city, address, rating)
+VALUES (1, 'Гранд Отель Москва', 'Роскошный 5-звездочный отель в центре Москвы', 'MOSCOW', 'ул. Тверская, 10', 'NO_RATING'),
+       (2, 'Питер Палас', 'Уютный отель с видом на Неву', 'SAINT_PETERSBURG', 'Невский проспект, 45', 'NO_RATING'),
+       (3, 'Казань Инн', 'Современный отель в Казани', 'KAZAN', 'ул. Баумана, 88', 'NO_RATING'),
+       (4, 'Сибирь Резорт', 'Горный курорт в сердце Сибири', 'NOVOSIBIRSK', 'ул. Ленина, 15', 'NO_RATING'),
+       (5, 'Сочи Спа Отель', 'Лучший курортный отель на Черном море', 'SOCHI', 'ул. Пляжная, 5', 'NO_RATING');
 
 INSERT INTO room (id, name, capacity, price, hotel_id)
 VALUES (1, 'Стандарт', 2, 5000, 1),
@@ -17,7 +17,7 @@ VALUES (1, 'Стандарт', 2, 5000, 1),
        (9, 'Апартаменты', 4, 11000, 5),
        (10, 'Пентхаус', 6, 25000, 5);
 
-INSERT INTO user (id, username, password)
+INSERT INTO "user" (id, username, password)
 VALUES (1, 'ivan_petrov', 'ivan'),
        (2, 'anna_ivanova', 'anna'),
        (3, 'sergey_smirnov',  'sergey'),
