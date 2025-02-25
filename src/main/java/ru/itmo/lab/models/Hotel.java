@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.itmo.lab.models.enums.City;
 import ru.itmo.lab.models.enums.HotelRating;
 
 import java.util.List;
@@ -26,12 +27,13 @@ public class Hotel {
     private String description;
 
     @Column(nullable = false)
-    private String city;
+    @Enumerated(EnumType.STRING)
+    private City city;
 
     @Column(nullable = false)
     private String address;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "hotel")
     private List<Room> rooms;
 
     @Column(nullable = false)
