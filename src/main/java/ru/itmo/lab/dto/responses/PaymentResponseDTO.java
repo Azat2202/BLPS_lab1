@@ -1,6 +1,7 @@
 package ru.itmo.lab.dto.responses;
 
 import lombok.Data;
+import ru.itmo.lab.models.Booking;
 import ru.itmo.lab.models.Room;
 import ru.itmo.lab.models.User;
 import ru.itmo.lab.models.enums.BookingStatus;
@@ -15,4 +16,5 @@ public class PaymentResponseDTO {
 	private Integer amount;
 	private PaymentStatus status;
 	private LocalDate date;
+	private Booking booking;
 }

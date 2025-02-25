@@ -6,6 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.itmo.lab.dto.requests.BookingRequestDTO;
+import ru.itmo.lab.dto.requests.PaymentRequestDTO;
 import ru.itmo.lab.dto.responses.BookingResponseDTO;
 import ru.itmo.lab.models.Booking;
 import ru.itmo.lab.models.Room;
@@ -64,5 +65,15 @@ public class BookingService {
 			startDate = startDate.plusDays(1);
 		}
 		return true;
+	}
+	
+	public BookingResponseDTO doBookingSuccess(PaymentRequestDTO paymentRequestDTO) {
+		Booking booking = bookingRepository.findById(paymentRequestDTO.getBookingId())
+				.orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+				
+		booking.setStatus(BookingStatus.SUCCESSES);
+		booking = bookingRepository.save(booking);
+		
+		return modelMapper.map(booking, BookingResponseDTO.class);
 	}
 }

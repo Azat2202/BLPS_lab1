@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.itmo.lab.dto.requests.BookingRequestDTO;
+import ru.itmo.lab.dto.requests.PaymentRequestDTO;
 import ru.itmo.lab.dto.responses.BookingResponseDTO;
 import ru.itmo.lab.dto.responses.PaymentResponseDTO;
 import ru.itmo.lab.models.Payment;
@@ -44,6 +45,20 @@ public class BookingController {
 			scheduler.schedulePaymentExpiration(payment);
 			
 			return ResponseEntity.ok(createdPayment);
+		} catch (IllegalArgumentException exception) {
+			return ResponseEntity.badRequest().body(exception.getMessage());
+		}
+	}
+	
+	@PostMapping("/payment_success")
+	@Operation(summary = "Подтвердить бронирование", description = "Отправляет подтверждние бронирования на почту")
+	public ResponseEntity<?> applyBooking(@RequestBody PaymentRequestDTO paymentRequestDTO) {
+		try {
+			scheduler.cancelPaymentExpiration(paymentRequestDTO);
+			
+			BookingResponseDTO bookingResponseDTO = bookingService.doBookingSuccess(paymentRequestDTO);
+			
+			return ResponseEntity.ok(bookingResponseDTO);
 		} catch (IllegalArgumentException exception) {
 			return ResponseEntity.badRequest().body(exception.getMessage());
 		}
