@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.itmo.lab.models.enums.BookingStatus;
 import ru.itmo.lab.models.enums.PaymentStatus;
 
 import java.time.LocalDate;
@@ -31,4 +32,7 @@ public class Payment {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private PaymentStatus status;
+	
+	@ManyToOne(optional = false, fetch = FetchType.EAGER)
+	private Booking booking;
 }

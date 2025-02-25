@@ -34,6 +34,7 @@ public class PaymentService {
 				.amount(createdBooking.getRoom().getPrice())
 				.status(PaymentStatus.CREATED)
 				.date(LocalDate.now())
+				.booking(modelMapper.map(createdBooking, Booking.class))
 				.build();
 		
 		createdPayment = paymentRepository.save(createdPayment);

@@ -3,6 +3,7 @@ package ru.itmo.lab.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
+import ru.itmo.lab.dto.requests.PaymentRequestDTO;
 import ru.itmo.lab.models.Payment;
 import ru.itmo.lab.models.enums.PaymentStatus;
 import ru.itmo.lab.repositories.PaymentRepository;
@@ -29,7 +30,7 @@ public class Scheduler {
 	}
 	
 	public void schedulePaymentExpiration(Payment payment) {
-		System.out.println("Планируем истечение платежа с ID " + payment.getId());
+		System.out.println("Planning expiration of payment with ID " + payment.getId());
 		
 		ScheduledFuture<?> scheduledTask = threadPoolTaskScheduler.schedule(
 				() -> {
@@ -58,12 +59,18 @@ public class Scheduler {
 	}
 
 	
-	public void cancelPaymentExpiration(Long paymentId) {
+	public void cancelPaymentExpiration(PaymentRequestDTO paymentRequestDTO) {
+		Long paymentId = paymentRequestDTO.getId();
+		
 		ScheduledFuture<?> scheduledTask = tasks.get(paymentId);
 		if (scheduledTask != null && !scheduledTask.isDone()) {
 			scheduledTask.cancel(true);
 			tasks.remove(paymentId);
 			System.out.println("Payment expiration canceled");
+			Payment payment = paymentRepository.findById(paymentId)
+					.orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+			payment.setStatus(PaymentStatus.PAID);
+			paymentRepository.save(payment);
 		}
 	}
 }
