@@ -2,6 +2,7 @@ package ru.itmo.lab.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class BookingController {
 
 	@PostMapping("/create")
 	@Operation(summary = "Создать бронирование", description = "Создаёт новую заявку на бронирование")
-	public ResponseEntity<?> createBooking(@RequestBody BookingRequestDTO bookingRequestDTO) {
+	public ResponseEntity<?> createBooking(@Valid @RequestBody BookingRequestDTO bookingRequestDTO) {
 		try {
 			BookingResponseDTO createdBooking = bookingService.createBooking(bookingRequestDTO);
 			
@@ -52,7 +53,7 @@ public class BookingController {
 	
 	@PostMapping("/payment_success")
 	@Operation(summary = "Подтвердить бронирование", description = "Отправляет подтверждние бронирования на почту")
-	public ResponseEntity<?> applyBooking(@RequestBody PaymentRequestDTO paymentRequestDTO) {
+	public ResponseEntity<?> applyBooking(@Valid @RequestBody PaymentRequestDTO paymentRequestDTO) {
 		try {
 			scheduler.cancelPaymentExpiration(paymentRequestDTO);
 			
