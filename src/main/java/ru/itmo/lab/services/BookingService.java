@@ -51,7 +51,7 @@ public class BookingService {
 		LocalDate startDate = bookingResponseDTO.getStartDate();
 		LocalDate endDate = bookingResponseDTO.getEndDate();
 		
-		Room room = bookingResponseDTO.getRoom();
+		Room room = modelMapper.map(bookingResponseDTO.getRoom(), Room.class);
 		
 		while (!startDate.isAfter(endDate)) {
 			

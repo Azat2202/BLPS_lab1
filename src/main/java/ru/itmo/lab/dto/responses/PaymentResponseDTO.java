@@ -16,5 +16,5 @@ public class PaymentResponseDTO {
 	private Integer amount;
 	private PaymentStatus status;
 	private LocalDate date;
-	private Booking booking;
+	private BookingResponseDTO booking;
 }
