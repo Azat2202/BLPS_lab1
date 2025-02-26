@@ -55,9 +55,9 @@ public class BookingService {
 		
 		while (!startDate.isAfter(endDate)) {
 			
-			List<Booking> bookings = bookingRepository.findAllByRoomAndStartDateLessThanEqualAndEndDateGreaterThanEqual(room, startDate, endDate);
+			List<Booking> bookings = bookingRepository.findAllByRoomAndStartDateLessThanEqualAndEndDateGreaterThanEqual(room, startDate, startDate);
 			for (Booking booking: bookings) {
-				if (booking != null && booking.getStatus() == BookingStatus.CREATED && !Objects.equals(booking.getId(), bookingResponseDTO.getId())) {
+				if (booking != null && booking.getStatus() == BookingStatus.SUCCESSES && !Objects.equals(booking.getId(), bookingResponseDTO.getId())) {
 					return false;
 				}
 			}
