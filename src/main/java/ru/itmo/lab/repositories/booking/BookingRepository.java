@@ -1,4 +1,4 @@
-package ru.itmo.lab.repositories;
+package ru.itmo.lab.repositories.booking;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
