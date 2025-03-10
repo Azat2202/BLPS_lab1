@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,7 @@ public class BookingController {
 	private final Scheduler scheduler;
 	private final ModelMapper modelMapper;
 
+	@PreAuthorize("hasAuthority('BOOK_ROOM')")
 	@PostMapping("/create")
 	@Operation(summary = "Создать бронирование", description = "Создаёт новую заявку на бронирование")
 	public ResponseEntity<?> createBooking(@Valid @RequestBody BookingRequestDTO bookingRequestDTO) {
@@ -51,6 +53,7 @@ public class BookingController {
 		}
 	}
 	
+	@PreAuthorize("hasAuthority('BOOK_ROOM')")
 	@PostMapping("/payment_success")
 	@Operation(summary = "Подтвердить бронирование", description = "Отправляет подтверждние бронирования на почту")
 	public ResponseEntity<?> applyBooking(@Valid @RequestBody PaymentRequestDTO paymentRequestDTO) {
