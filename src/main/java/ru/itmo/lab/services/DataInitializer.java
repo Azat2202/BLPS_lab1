@@ -23,12 +23,12 @@ public class DataInitializer implements CommandLineRunner {
 	@Override
 	@Transactional
 	public void run(String... args) {
-		if (userRepository.count() == 6) {
-			createUser("u", "u", Role.USER);
-			createUser("ho", "ho", Role.HOTEL_OWNER);
-			createUser("ha", "ha", Role.HOTEL_ADMIN);
-			createUser("sa", "sa", Role.SYSTEM_ADMIN);
-			createUser("ta", "ta", Role.TRANSACTION_APPROVER);
+		if (userRepository.count() == 0) {
+			createUser("user", "user", Role.USER);
+			createUser("hotel_owner", "hotel_owner", Role.HOTEL_OWNER);
+			createUser("hotel_admin", "hotel_admin", Role.HOTEL_ADMIN);
+			createUser("system_admin", "system_admin", Role.SYSTEM_ADMIN);
+			createUser("transaction_approver", "transaction_approver", Role.TRANSACTION_APPROVER);
 		}
 	}
 	
