@@ -4,11 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import ru.itmo.lab.dto.midleware.HotelRoom;
 import ru.itmo.lab.dto.responses.HotelResponseDTO;
 import ru.itmo.lab.dto.responses.RoomResponseDTO;
+import ru.itmo.lab.models.Hotel;
 import ru.itmo.lab.models.enums.City;
 import ru.itmo.lab.repositories.HotelRepository;
 
@@ -22,8 +27,8 @@ import java.util.stream.Collectors;
 public class SearcherService {
     private final HotelRepository hotelRepository;
     private final ModelMapper modelMapper;
+    private final PlatformTransactionManager txManager;
 
-    @Transactional(readOnly = true)
     public List<RoomResponseDTO> searchHotel(
             Optional<String> hotelName,
             LocalDate checkinDate,
@@ -35,16 +40,26 @@ public class SearcherService {
             Optional<Integer> minPrice,
             Optional<Integer> maxPrice
     ) {
-        var hotelRooms = hotelRepository.searchRoomsAndHotels(
-                hotelName.orElse(""),
-                city,
-                peopleCount,
-                checkinDate,
-                checkoutDate,
-                minRating.orElse(-1),
-                maxRating.orElse(6),
-                minPrice.orElse(0),
-                maxPrice.orElse(Integer.MAX_VALUE));
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setName("searchHotel");
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        TransactionStatus status = txManager.getTransaction(def);
+        List<HotelRoom> hotelRooms = List.of();
+        try {
+            hotelRooms = hotelRepository.searchRoomsAndHotels(
+                    hotelName.orElse(""),
+                    city,
+                    peopleCount,
+                    checkinDate,
+                    checkoutDate,
+                    minRating.orElse(-1),
+                    maxRating.orElse(6),
+                    minPrice.orElse(0),
+                    maxPrice.orElse(Integer.MAX_VALUE));
+            txManager.commit(status);
+        } catch (Exception e) {
+            txManager.rollback(status);
+        }
         return hotelRooms
                 .stream()
                 .map(HotelRoom::getRoom)

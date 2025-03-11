@@ -1,3 +1,5 @@
+!transaction_logs/.gitkeep
+transaction_logs/*
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar

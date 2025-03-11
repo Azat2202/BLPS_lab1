@@ -1,12 +1,6 @@
 package ru.itmo.lab.configurations;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
-import org.hibernate.boot.model.FunctionContributions;
-import org.hibernate.dialect.PostgreSQLDialect;
-import org.hibernate.query.sqm.function.FunctionKind;
-import org.hibernate.query.sqm.function.SqmFunctionRegistry;
-import org.hibernate.query.sqm.produce.function.PatternFunctionDescriptorBuilder;
-import org.hibernate.type.spi.TypeConfiguration;
 import org.postgresql.xa.PGXADataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +31,7 @@ public class BookingDataSourceConfiguration {
     String username;
 
     @Value("${bookingsdb.password}")
-    String passport;
+    String password;
 
     public Map<String, String> jpaProperties() {
         Map<String, String> jpaProperties = new HashMap<>();
@@ -82,7 +76,7 @@ public class BookingDataSourceConfiguration {
         PGXADataSource pgxaDataSource = new PGXADataSource();
         pgxaDataSource.setUrl(dbUrl);
         pgxaDataSource.setUser(username);
-        pgxaDataSource.setPassword(passport);
+        pgxaDataSource.setPassword(password);
 
         AtomikosDataSourceBean xaDataSource = new AtomikosDataSourceBean();
         xaDataSource.setXaDataSource(pgxaDataSource);

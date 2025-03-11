@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import ru.itmo.lab.dto.requests.BookingRequestDTO;
 import ru.itmo.lab.dto.requests.PaymentRequestDTO;
 import ru.itmo.lab.dto.responses.BookingResponseDTO;
