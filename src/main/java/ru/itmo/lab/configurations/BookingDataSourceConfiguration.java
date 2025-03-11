@@ -1,6 +1,12 @@
 package ru.itmo.lab.configurations;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
+import org.hibernate.boot.model.FunctionContributions;
+import org.hibernate.dialect.PostgreSQLDialect;
+import org.hibernate.query.sqm.function.FunctionKind;
+import org.hibernate.query.sqm.function.SqmFunctionRegistry;
+import org.hibernate.query.sqm.produce.function.PatternFunctionDescriptorBuilder;
+import org.hibernate.type.spi.TypeConfiguration;
 import org.postgresql.xa.PGXADataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,19 +30,19 @@ import java.util.Map;
 )
 public class BookingDataSourceConfiguration {
 
-    @Value("${spring.datasource.url}")
+    @Value("${bookingsdb.url}")
     String dbUrl;
 
-    @Value("${spring.datasource.username}")
+    @Value("${bookingsdb.username}")
     String username;
 
-    @Value("${spring.datasource.password}")
+    @Value("${bookingsdb.password}")
     String passport;
 
     public Map<String, String> jpaProperties() {
         Map<String, String> jpaProperties = new HashMap<>();
         jpaProperties.put("hibernate.hbm2ddl.auto", "none");
-        jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+        jpaProperties.put("hibernate.dialect", "ru.itmo.lab.configurations.CustomPostgresqlDialect");
         jpaProperties.put("hibernate.show_sql", "true");
         jpaProperties.put("hibernate.temp.use_jdbc_metadata_defaults", "false");
         jpaProperties.put("javax.persistence.transactionType", "JTA");
@@ -58,8 +64,8 @@ public class BookingDataSourceConfiguration {
     ) {
         return entityManagerFactoryBuilder
                 .dataSource(postgresDataSource)
-                .packages("ru.itmo.lab.repositories")
-                .persistenceUnit("postgres")
+                .packages("ru.itmo.lab.models")
+                .persistenceUnit("booking")
                 .properties(jpaProperties())
                 .jta(true)
                 .build();

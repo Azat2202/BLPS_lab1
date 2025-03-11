@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.lab.dto.midleware.HotelRoom;
 import ru.itmo.lab.dto.responses.HotelResponseDTO;
 import ru.itmo.lab.dto.responses.RoomResponseDTO;
@@ -21,6 +23,7 @@ public class SearcherService {
     private final HotelRepository hotelRepository;
     private final ModelMapper modelMapper;
 
+    @Transactional(readOnly = true)
     public List<RoomResponseDTO> searchHotel(
             Optional<String> hotelName,
             LocalDate checkinDate,

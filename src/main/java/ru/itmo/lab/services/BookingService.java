@@ -11,7 +11,7 @@ import ru.itmo.lab.models.Booking;
 import ru.itmo.lab.models.Room;
 import ru.itmo.lab.models.User;
 import ru.itmo.lab.models.enums.BookingStatus;
-import ru.itmo.lab.repositories.booking.BookingRepository;
+import ru.itmo.lab.repositories.BookingRepository;
 import ru.itmo.lab.repositories.RoomRepository;
 import ru.itmo.lab.repositories.UserRepository;
 

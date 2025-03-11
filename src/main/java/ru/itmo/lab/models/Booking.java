@@ -22,10 +22,10 @@ public class Booking {
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private User user;
     
-    @Column(nullable = false)
+    @Column(nullable = false, name="start_date")
     private LocalDate startDate;
     
-    @Column(nullable = false)
+    @Column(nullable = false, name = "end_date")
     private LocalDate endDate;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
