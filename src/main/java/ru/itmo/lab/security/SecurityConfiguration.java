@@ -1,23 +1,24 @@
 package ru.itmo.lab.security;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.jaas.JaasAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.SecurityFilterChain;
 import ru.itmo.lab.repositories.UserRepository;
+
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -39,6 +40,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/public/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                .authenticationManager(authenticationManager())
                 .httpBasic(withDefaults())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authenticationEntryPoint)
@@ -46,22 +48,32 @@ public class SecurityConfiguration {
                 );
         return http.build();
     }
-    
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new CustomUserDetailService(userRepository);
-    }
-    
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-    
-    @Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder);
-        return new ProviderManager(authProvider);
-    }
+	
+	@Bean
+	public AuthenticationManager authenticationManager() {
+		return authentication -> {
+			String username = authentication.getName();
+			String password = authentication.getCredentials().toString();
+			System.out.println(username);
+			System.out.println(password);
+			
+			try {
+				LoginContext loginContext = new LoginContext("JAASConfig", new CustomCallbackHandler(username, password));
+				loginContext.login();
+				
+				return new UsernamePasswordAuthenticationToken(username, password, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+			} catch (LoginException e) {
+				throw new BadCredentialsException("Login failed: " + e.getMessage());
+			}
+		};
+	}
+
+	
+	@Bean
+	public JaasAuthenticationProvider jaasAuthenticationProvider() {
+		System.out.println("JaasAuthenticationProvider is being created...");
+		JaasAuthenticationProvider provider = new JaasAuthenticationProvider();
+		provider.setLoginConfig(new ClassPathResource("jaas.config"));
+		return provider;
+	}
 }
