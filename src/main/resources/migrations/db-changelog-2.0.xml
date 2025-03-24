@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+<!--    Update users table with bcrypted passwords-->
+    <changeSet id="1742852273469-1" author="azat222">
+        <update tableName="users">
+            <column name="password" value="$2a$10$hFHF61Rv/MzAkHXDnH/PJeQ.16nKdrKaksjR55UGqVADOCHCBzS6e"/>
+            <where>username='ivan_petrov'</where>
+        </update>
+        <update tableName="users">
+            <column name="password" value="$2a$10$MPMghL/mRmxR72zDgFoBc.FvFOGbuDuY7FQp2yFh0y3nRIJ7zvHRS"/>
+            <where>username='anna_ivanova'</where>
+        </update>
+        <update tableName="users">
+            <column name="password" value="$2a$10$3RJoJCUk25kHjkg.UoUo8eod7DNPOupqsvldcAEuMaenR4/zFwLoq"/>
+            <where>username='sergey_smirnov'</where>
+        </update>
+        <update tableName="users">
+            <column name="password" value="$2a$10$fi6Xk3hwWoI8k1J1Z7yDZunfAxKm.MJu9pWNYOhtMsc.tpdnL6aIy"/>
+            <where>username='elena_orlova'</where>
+        </update>
+        <update tableName="users">
+            <column name="password" value="$2a$10$CxOIAeJP9VyeSm91Br9Uielz0tWzWUH0YB9px8gLDuWYd86A9DRtS"/>
+            <where>username='dmitry_kuznetsov'</where>
+        </update>
+<!--        admin-admin -->
+        <update tableName="users">
+            <column name="password" value="$2a$10$QF9qqf2yWZYdFyDWxf5.P.qx786Qvj87D4Qy0lFUiPAXwyyMnQqHa"/>
+            <where>username='admin'</where>
+        </update>
+
+
+    </changeSet>
+
+</databaseChangeLog>
