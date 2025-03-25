@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,7 +25,8 @@ import java.util.Optional;
 @Tag(name = "Searcher Controller", description = "Основная страница поиска отелей")
 public class SearcherController {
     private final SearcherService searcherService;
-
+    
+    @PreAuthorize("hasAuthority('VIEW_HOTELS')")
     @GetMapping("/search")
     @Operation(summary = "Поиск по отелям", description = "Поиск по отелям с фильтрами")
     public List<RoomResponseDTO> search(

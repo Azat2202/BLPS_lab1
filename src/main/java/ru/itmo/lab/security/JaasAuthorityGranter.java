@@ -10,6 +10,7 @@ import ru.itmo.lab.repositories.UserRepository;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class JaasAuthorityGranter implements AuthorityGranter {
@@ -18,9 +19,11 @@ public class JaasAuthorityGranter implements AuthorityGranter {
 
     @Override
     public Set<String> grant(Principal principal) {
-//        User user = userRepository
-//                .findByUsername(principal.getName())
-//                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "user not found"));
-        return Collections.singleton("ROLE_USER");
+        User user = userRepository
+                .findByUsername(principal.getName())
+                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.UNAUTHORIZED));
+        return user.getRole().getPrivileges().stream()
+                .map(Enum::name)
+                .collect(Collectors.toSet());
     }
 }

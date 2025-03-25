@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="1739919935986-9" author="Kostya">
+        <insert tableName="users">
+            <column name="id" value="7"/>
+            <column name="username" value="user"/>
+            <column name="password" value="user"/>
+            <column name="role" value="USER"/>
+        </insert>
+
+        <insert tableName="users">
+            <column name="id" value="8"/>
+            <column name="username" value="hotel_admin"/>
+            <column name="password" value="hotel_admin"/>
+            <column name="role" value="HOTEL_ADMIN"/>
+        </insert>
+
+        <insert tableName="users">
+            <column name="id" value="9"/>
+            <column name="username" value="hotel_owner"/>
+            <column name="password" value="hotel_owner"/>
+            <column name="role" value="HOTEL_OWNER"/>
+        </insert>
+
+        <insert tableName="users">
+            <column name="id" value="10"/>
+            <column name="username" value="system_admin"/>
+            <column name="password" value="system_admin"/>
+            <column name="role" value="SYSTEM_ADMIN"/>
+        </insert>
+
+        <insert tableName="users">
+            <column name="id" value="11"/>
+            <column name="username" value="transaction_approver"/>
+            <column name="password" value="transaction_approver"/>
+            <column name="role" value="TRANSACTION_APPROVER"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

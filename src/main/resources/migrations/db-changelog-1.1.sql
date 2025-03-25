@@ -1,3 +1,7 @@
+DELETE FROM room;
+DELETE FROM hotel;
+
+
 INSERT INTO hotel (id, name, description, city, address, rating)
 VALUES (1, 'Гранд Отель Москва', 'Роскошный 5-звездочный отель в центре Москвы', 'MOSCOW', 'ул. Тверская, 10', 'NO_RATING'),
        (2, 'Питер Палас', 'Уютный отель с видом на Неву', 'SAINT_PETERSBURG', 'Невский проспект, 45', 'NO_RATING'),
@@ -16,10 +20,3 @@ VALUES (1, 'Стандарт', 2, 5000, 1),
        (8, 'Хостел', 1, 1500, 4),
        (9, 'Апартаменты', 4, 11000, 5),
        (10, 'Пентхаус', 6, 25000, 5);
-
-INSERT INTO "user" (id, username, password)
-VALUES (1, 'ivan_petrov', 'ivan'),
-       (2, 'anna_ivanova', 'anna'),
-       (3, 'sergey_smirnov',  'sergey'),
-       (4, 'elena_orlova', 'elena'),
-       (5, 'dmitry_kuznetsov', 'dmitry');
