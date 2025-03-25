@@ -1,4 +1,9 @@
-package ru.itmo.lab.security;
+package ru.itmo.lab.jaas;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import ru.itmo.lab.models.User;
+import ru.itmo.lab.repositories.UserRepository;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.*;
@@ -9,21 +14,16 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
+@RequiredArgsConstructor
 public class CustomLoginModule implements LoginModule {
 	private Subject subject;
 	private CallbackHandler callbackHandler;
 	private CustomPrincipal customPrincipal;
-	
-	private static final String[][] USERS = {
-			{"user1", "password1"},
-			{"user2", "password2"}
-	};
+	private final UserRepository userRepository;
 	
 	
 	@Override
 	public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState, Map<String, ?> options) {
-		System.out.println(Arrays.toString(USERS[0]));
-		System.out.println(Arrays.toString(USERS[1]));
 		this.subject = subject;
 		this.callbackHandler = callbackHandler;
 	}
@@ -36,19 +36,20 @@ public class CustomLoginModule implements LoginModule {
 		callbacks[1] = new PasswordCallback("Password: ", false);
 		
 		try {
+			System.out.println(1);
 			callbackHandler.handle(callbacks);
 			String username = ((NameCallback) callbacks[0]).getName();
 			String password = new String(((PasswordCallback) callbacks[1]).getPassword());
-			
-			for (String[] user : USERS) {
-				if (user[0].equals(username) && user[1].equals(password)) {
-					customPrincipal = new CustomPrincipal(username);
-					return true;
-				}
-			}
+			System.out.println(username);
+			System.out.println(password);
+			User user = userRepository.findByUsername(username);
+			System.out.println(user);
+			System.out.println(user.getPassword());
+			if (user.getPassword().equals(password)) return true;
 			
 			throw new FailedLoginException("Invalid credentials");
 		} catch (IOException | UnsupportedCallbackException e) {
+			System.out.println(e.getMessage());
 			throw new LoginException("Error during authentication");
 		}
 	}

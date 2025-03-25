@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.SecurityFilterChain;
+import ru.itmo.lab.jaas.CustomCallbackHandler;
 import ru.itmo.lab.repositories.UserRepository;
 
 import javax.security.auth.login.LoginContext;
@@ -32,46 +33,25 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(final HttpSecurity http, CustomAccessDeniedHandler customAccessDeniedHandler) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .cors(withDefaults())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/api/public/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .authenticationManager(authenticationManager())
-                .httpBasic(withDefaults())
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(authenticationEntryPoint)
-                        .accessDeniedHandler(customAccessDeniedHandler)
-                );
-        return http.build();
+	    http.csrf(AbstractHttpConfigurer::disable)
+			    .cors(withDefaults())
+			    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			    .authorizeHttpRequests(auth -> auth
+					    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+					    .requestMatchers("/api/public/**").permitAll()
+					    .anyRequest().authenticated()
+			    )
+			    .authenticationProvider(jaasAuthenticationProvider())
+			    .httpBasic(withDefaults())
+			    .exceptionHandling(exception -> exception
+					    .authenticationEntryPoint(authenticationEntryPoint)
+					    .accessDeniedHandler(customAccessDeniedHandler)
+			    );
+	    return http.build();
     }
 	
 	@Bean
-	public AuthenticationManager authenticationManager() {
-		return authentication -> {
-			String username = authentication.getName();
-			String password = authentication.getCredentials().toString();
-			System.out.println(username);
-			System.out.println(password);
-			
-			try {
-				LoginContext loginContext = new LoginContext("JAASConfig", new CustomCallbackHandler(username, password));
-				loginContext.login();
-				
-				return new UsernamePasswordAuthenticationToken(username, password, List.of(new SimpleGrantedAuthority("ROLE_USER")));
-			} catch (LoginException e) {
-				throw new BadCredentialsException("Login failed: " + e.getMessage());
-			}
-		};
-	}
-
-	
-	@Bean
 	public JaasAuthenticationProvider jaasAuthenticationProvider() {
-		System.out.println("JaasAuthenticationProvider is being created...");
 		JaasAuthenticationProvider provider = new JaasAuthenticationProvider();
 		provider.setLoginConfig(new ClassPathResource("jaas.config"));
 		return provider;

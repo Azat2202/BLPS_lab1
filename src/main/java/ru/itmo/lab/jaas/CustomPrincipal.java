@@ -1,4 +1,4 @@
-package ru.itmo.lab.security;
+package ru.itmo.lab.jaas;
 
 import java.io.Serializable;
 import java.security.Principal;

@@ -1,4 +1,4 @@
-package ru.itmo.lab.security;
+package ru.itmo.lab.jaas;
 
 import javax.security.auth.callback.*;
 import java.io.IOException;
@@ -14,6 +14,7 @@ public class CustomCallbackHandler implements CallbackHandler {
 	
 	@Override
 	public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
+		System.out.println("callback");
 		for (Callback callback : callbacks) {
 			if (callback instanceof NameCallback nameCallback) {
 				nameCallback.setName(username);
