@@ -1,5 +1,6 @@
 package ru.itmo.lab.services;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.NonUniqueResultException;
 import org.modelmapper.ModelMapper;
@@ -18,6 +19,7 @@ import ru.itmo.lab.repositories.RoomRepository;
 import ru.itmo.lab.repositories.UserRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -76,5 +78,14 @@ public class BookingService {
 		booking = bookingRepository.save(booking);
 
 		return modelMapper.map(booking, BookingResponseDTO.class);
+	}
+	
+	public List<BookingResponseDTO> find(String hotelName, LocalDate checkinDate, LocalDate checkoutDate) {
+		List<Booking> bookings = bookingRepository.findBookingsByHotelAndDates(hotelName, checkinDate, checkoutDate);
+		List<BookingResponseDTO> answer = new ArrayList<>();
+		for (Booking booking: bookings) {
+			answer.add(modelMapper.map(booking, BookingResponseDTO.class));
+		}
+		return answer;
 	}
 }
