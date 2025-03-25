@@ -17,6 +17,7 @@ import ru.itmo.lab.repositories.BookingRepository;
 import ru.itmo.lab.repositories.PaymentRepository;
 import ru.itmo.lab.repositories.RoomRepository;
 import ru.itmo.lab.repositories.UserRepository;
+import ru.itmo.lab.utils.TransactionHelper;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,17 +28,26 @@ import java.util.Objects;
 public class PaymentService {
 	private final PaymentRepository paymentRepository;
 	private final ModelMapper modelMapper;
+	private final TransactionHelper transactionHelper;
 	
 	public PaymentResponseDTO createPayment(BookingResponseDTO createdBooking) {
-		Payment createdPayment = Payment.builder()
-				.user(createdBooking.getUser())
-				.amount(createdBooking.getRoom().getPrice())
-				.status(PaymentStatus.CREATED)
-				.date(LocalDate.now())
-				.booking(modelMapper.map(createdBooking, Booking.class))
-				.build();
-		
-		createdPayment = paymentRepository.save(createdPayment);
-		return modelMapper.map(createdPayment, PaymentResponseDTO.class);
-	}
+		var status = transactionHelper.createTransaction("createPayment");
+
+        try {
+            Payment createdPayment = Payment.builder()
+                    .user(createdBooking.getUser())
+                    .amount(createdBooking.getRoom().getPrice())
+                    .status(PaymentStatus.CREATED)
+                    .date(LocalDate.now())
+                    .booking(modelMapper.map(createdBooking, Booking.class))
+                    .build();
+
+            createdPayment = paymentRepository.save(createdPayment);
+			transactionHelper.commit(status);
+            return modelMapper.map(createdPayment, PaymentResponseDTO.class);
+        } catch (Exception e) {
+			transactionHelper.rollback(status);
+            return null;
+        }
+    }
 }

@@ -16,6 +16,7 @@ import ru.itmo.lab.dto.responses.RoomResponseDTO;
 import ru.itmo.lab.models.Hotel;
 import ru.itmo.lab.models.enums.City;
 import ru.itmo.lab.repositories.HotelRepository;
+import ru.itmo.lab.utils.TransactionHelper;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 public class SearcherService {
     private final HotelRepository hotelRepository;
     private final ModelMapper modelMapper;
-    private final PlatformTransactionManager txManager;
+    private final TransactionHelper transactionHelper;
 
     public List<RoomResponseDTO> searchHotel(
             Optional<String> hotelName,
@@ -40,10 +41,7 @@ public class SearcherService {
             Optional<Integer> minPrice,
             Optional<Integer> maxPrice
     ) {
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setName("searchHotel");
-        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        TransactionStatus status = txManager.getTransaction(def);
+        var status = transactionHelper.createTransaction("searchHotel");
         List<HotelRoom> hotelRooms = List.of();
         try {
             hotelRooms = hotelRepository.searchRoomsAndHotels(
@@ -56,9 +54,9 @@ public class SearcherService {
                     maxRating.orElse(6),
                     minPrice.orElse(0),
                     maxPrice.orElse(Integer.MAX_VALUE));
-            txManager.commit(status);
+            transactionHelper.commit(status);
         } catch (Exception e) {
-            txManager.rollback(status);
+            transactionHelper.rollback(status);
         }
         return hotelRooms
                 .stream()
