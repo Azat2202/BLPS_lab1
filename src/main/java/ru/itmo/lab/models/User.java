@@ -29,10 +29,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column
+    @Column(name = "passport_number")
     private String passportNumber;
 
-    @Column
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @OneToMany(fetch = FetchType.LAZY)

@@ -16,4 +16,5 @@
     <include file="migrations/db-changelog-1.9.xml"/>
     <!--        <include file="migrations/db-changelog-1.10.xml"/>-->
     <include file="migrations/db-changelog-2.0.xml"/>
+    <include file="migrations/db-changelog-2.1.xml"/>
 </databaseChangeLog>
