@@ -1,25 +1,31 @@
 package ru.itmo.lab.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.jaas.JaasAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.jaas.AbstractJaasAuthenticationProvider;
+import org.springframework.security.authentication.jaas.AuthorityGranter;
+import org.springframework.security.authentication.jaas.DefaultJaasAuthenticationProvider;
+import org.springframework.security.authentication.jaas.memory.InMemoryConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import ru.itmo.lab.jaas.CustomCallbackHandler;
+import org.springframework.web.cors.CorsConfiguration;
 import ru.itmo.lab.repositories.UserRepository;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
+import javax.security.auth.login.AppConfigurationEntry;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -28,32 +34,45 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
     private final UserRepository userRepository;
-    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
-    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(final HttpSecurity http, CustomAccessDeniedHandler customAccessDeniedHandler) throws Exception {
-	    http.csrf(AbstractHttpConfigurer::disable)
-			    .cors(withDefaults())
-			    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			    .authorizeHttpRequests(auth -> auth
-					    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-					    .requestMatchers("/api/public/**").permitAll()
-					    .anyRequest().authenticated()
-			    )
-			    .authenticationProvider(jaasAuthenticationProvider())
-			    .httpBasic(withDefaults())
-			    .exceptionHandling(exception -> exception
-					    .authenticationEntryPoint(authenticationEntryPoint)
-					    .accessDeniedHandler(customAccessDeniedHandler)
-			    );
-	    return http.build();
+    public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable)
+                .cors(withDefaults())
+                .httpBasic(withDefaults())
+                .authenticationProvider(jaasAuthenticationProvider(configuration()))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/api/public/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
+                );
+        return http.build();
     }
-	
-	@Bean
-	public JaasAuthenticationProvider jaasAuthenticationProvider() {
-		JaasAuthenticationProvider provider = new JaasAuthenticationProvider();
-		provider.setLoginConfig(new ClassPathResource("jaas.config"));
-		return provider;
-	}
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public InMemoryConfiguration configuration() {
+        AppConfigurationEntry configEntry = new AppConfigurationEntry(JaasLoginModule.class.getName(),
+                AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
+                Map.of("userRepository", userRepository));
+        var configurationEntries = new AppConfigurationEntry[]{configEntry};
+        return new InMemoryConfiguration(Map.of("SPRINGSECURITY", configurationEntries));
+    }
+
+    @Bean
+    @Qualifier
+    public AuthenticationProvider jaasAuthenticationProvider(javax.security.auth.login.Configuration configuration) {
+        var provider = new DefaultJaasAuthenticationProvider();
+        provider.setConfiguration(configuration);
+        provider.setAuthorityGranters(new AuthorityGranter[]{new JaasAuthorityGranter(userRepository)});
+        return provider;
+    }
 }
