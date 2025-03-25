@@ -32,7 +32,7 @@ public class BookingController {
 	private final PaymentService paymentService;
 	private final Scheduler scheduler;
 	private final ModelMapper modelMapper;
-
+	
 	@PreAuthorize("hasAuthority('BOOK_ROOM')")
 	@PostMapping("/create")
 	@Operation(summary = "Создать бронирование", description = "Создаёт новую заявку на бронирование")
@@ -74,10 +74,22 @@ public class BookingController {
 	@PreAuthorize("hasAuthority('VIEW_RESERVATIONS')")
 	@GetMapping("/actual_reservations")
 	@Operation(summary = "Посмотреть бронирования в выбранном отеле на ближайшие даты", description = "Отправляет подтверждние бронирования на почту")
-	public ResponseEntity<?> check_bookings(@Valid  @RequestParam String hotelName,
-												@Valid	@RequestParam LocalDate checkinDate,
-	                                            @Valid  @RequestParam LocalDate checkoutDate) {
+	public ResponseEntity<?> check_bookings(@Valid @RequestParam String hotelName,
+	                                        @Valid @RequestParam LocalDate checkinDate,
+	                                        @Valid @RequestParam LocalDate checkoutDate) {
 		List<BookingResponseDTO> bookings = bookingService.find(hotelName, checkinDate, checkoutDate);
 		return ResponseEntity.ok(bookings);
+	}
+	
+	@PreAuthorize("hasAuthority('CANCEL_BOOKING')")
+	@DeleteMapping("/cancel_booking")
+	@Operation(summary = "Отменяет бронирование", description = "Отменяет бронирование. Доступно только администраторам системы")
+	public ResponseEntity<?> cancel_booking(@Valid Long bookingId) {
+		try {
+			BookingResponseDTO booking = bookingService.cancel(bookingId);
+			return ResponseEntity.ok(booking);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 }

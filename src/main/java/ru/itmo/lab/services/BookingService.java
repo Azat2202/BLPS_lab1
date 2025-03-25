@@ -88,4 +88,13 @@ public class BookingService {
 		}
 		return answer;
 	}
+	
+	public BookingResponseDTO cancel(Long bookingId) {
+		Booking booking = bookingRepository.findById(bookingId)
+				.orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+		
+		booking.setStatus(BookingStatus.CANCELED);
+		bookingRepository.save(booking);
+		return modelMapper.map(booking, BookingResponseDTO.class);
+	}
 }
