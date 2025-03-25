@@ -1,8 +1,10 @@
 package ru.itmo.lab.services;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import ru.itmo.lab.dto.requests.BookingRequestDTO;
@@ -17,6 +19,7 @@ import ru.itmo.lab.repositories.RoomRepository;
 import ru.itmo.lab.repositories.UserRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,14 +30,14 @@ public class BookingService {
 	private final UserRepository userRepository;
 	private final RoomRepository roomRepository;
 	private final ModelMapper modelMapper;
-	
+
 	public BookingResponseDTO createBooking(BookingRequestDTO bookingRequestDTO) {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
-		User user = userRepository.findByUsername(username);
-		
+		User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+
 		Room room = roomRepository.findById(bookingRequestDTO.getRoomId())
 				.orElseThrow(() -> new IllegalArgumentException("Room not found"));
-		
+
 		Booking booking = Booking.builder()
 				.user(user)
 				.room(room)
@@ -42,38 +45,56 @@ public class BookingService {
 				.endDate(bookingRequestDTO.getEndDate())
 				.status(BookingStatus.CREATED)
 				.build();
-		
+
 		booking = bookingRepository.save(booking);
 		return modelMapper.map(booking, BookingResponseDTO.class);
 	}
-	
+
 	public boolean checkRoomBooking(BookingResponseDTO bookingResponseDTO) {
 		LocalDate startDate = bookingResponseDTO.getStartDate();
 		LocalDate endDate = bookingResponseDTO.getEndDate();
-		
+
 		Room room = modelMapper.map(bookingResponseDTO.getRoom(), Room.class);
-		
+
 		while (!startDate.isAfter(endDate)) {
-			
+
 			List<Booking> bookings = bookingRepository.findAllByRoomAndStartDateLessThanEqualAndEndDateGreaterThanEqual(room, startDate, startDate);
 			for (Booking booking: bookings) {
 				if (booking != null && booking.getStatus() == BookingStatus.SUCCESSES && !Objects.equals(booking.getId(), bookingResponseDTO.getId())) {
 					return false;
 				}
 			}
-			
+
 			startDate = startDate.plusDays(1);
 		}
 		return true;
 	}
-	
+
 	public BookingResponseDTO doBookingSuccess(PaymentRequestDTO paymentRequestDTO) {
 		Booking booking = bookingRepository.findById(paymentRequestDTO.getBookingId())
 				.orElseThrow(() -> new IllegalArgumentException("Booking not found"));
-				
+
 		booking.setStatus(BookingStatus.SUCCESSES);
 		booking = bookingRepository.save(booking);
+
+		return modelMapper.map(booking, BookingResponseDTO.class);
+	}
+	
+	public List<BookingResponseDTO> find(String hotelName, LocalDate checkinDate, LocalDate checkoutDate) {
+		List<Booking> bookings = bookingRepository.findBookingsByHotelAndDates(hotelName, checkinDate, checkoutDate);
+		List<BookingResponseDTO> answer = new ArrayList<>();
+		for (Booking booking: bookings) {
+			answer.add(modelMapper.map(booking, BookingResponseDTO.class));
+		}
+		return answer;
+	}
+	
+	public BookingResponseDTO cancel(Long bookingId) {
+		Booking booking = bookingRepository.findById(bookingId)
+				.orElseThrow(() -> new IllegalArgumentException("Booking not found"));
 		
+		booking.setStatus(BookingStatus.CANCELED);
+		bookingRepository.save(booking);
 		return modelMapper.map(booking, BookingResponseDTO.class);
 	}
 }

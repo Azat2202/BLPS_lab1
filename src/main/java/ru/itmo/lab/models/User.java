@@ -5,8 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.itmo.lab.models.enums.Privilege;
+import ru.itmo.lab.models.enums.Role;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -34,4 +37,11 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY)
     private List<Booking> bookings;
+    
+    @Enumerated(EnumType.STRING)
+    private Role role;
+    
+    public Set<Privilege> getPrivileges() {
+        return role.getPrivileges();
+    }
 }
