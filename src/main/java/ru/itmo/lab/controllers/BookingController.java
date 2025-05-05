@@ -1,5 +1,6 @@
 package ru.itmo.lab.controllers;
 
+import com.atomikos.icatch.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.itmo.lab.dto.requests.BookingRequestDTO;
 import ru.itmo.lab.dto.requests.PaymentRequestDTO;
@@ -14,9 +16,11 @@ import ru.itmo.lab.dto.responses.BookingResponseDTO;
 import ru.itmo.lab.dto.responses.PaymentResponseDTO;
 import ru.itmo.lab.models.Booking;
 import ru.itmo.lab.models.Payment;
+import ru.itmo.lab.models.User;
 import ru.itmo.lab.services.BookingService;
 import ru.itmo.lab.services.PaymentService;
 import ru.itmo.lab.services.Scheduler;
+import ru.itmo.lab.utils.TransactionHelper;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -32,11 +36,13 @@ public class BookingController {
 	private final PaymentService paymentService;
 	private final Scheduler scheduler;
 	private final ModelMapper modelMapper;
+	private final TransactionHelper transactionHelper;
 	
 	@PreAuthorize("hasAuthority('BOOK_ROOM')")
 	@PostMapping("/create")
 	@Operation(summary = "Создать бронирование", description = "Создаёт новую заявку на бронирование")
 	public ResponseEntity<?> createBooking(@Valid @RequestBody BookingRequestDTO bookingRequestDTO) {
+		var status = transactionHelper.createTransaction("createBookingMain");
 		try {
 			BookingResponseDTO createdBooking = bookingService.createBooking(bookingRequestDTO);
 			
@@ -49,14 +55,16 @@ public class BookingController {
 			
 			Payment payment = modelMapper.map(createdPayment, Payment.class);
 			scheduler.schedulePaymentExpiration(payment);
-			
+
+			transactionHelper.commit(status);
 			return ResponseEntity.ok(createdPayment);
 		} catch (IllegalArgumentException exception) {
+			transactionHelper.rollback(status);
 			return ResponseEntity.badRequest().body(exception.getMessage());
 		}
 	}
 	
-	@PreAuthorize("hasAuthority('BOOK_ROOM')")
+	@PreAuthorize("hasRole('TRANSACTION_APPROVER')")
 	@PostMapping("/payment_success")
 	@Operation(summary = "Подтвердить бронирование", description = "Отправляет подтверждние бронирования на почту")
 	public ResponseEntity<?> applyBooking(@Valid @RequestBody PaymentRequestDTO paymentRequestDTO) {

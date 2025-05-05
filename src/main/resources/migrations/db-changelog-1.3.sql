@@ -1,2 +1,2 @@
-INSERT INTO "user" (id, username, password)
-VALUES (6, 'admin', 'password');
+INSERT INTO "user" (username, password)
+VALUES ('admin', 'password');
