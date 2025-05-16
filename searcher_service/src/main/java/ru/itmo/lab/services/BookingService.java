@@ -1,6 +1,5 @@
 package ru.itmo.lab.services;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,30 +7,17 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
 import ru.itmo.lab.dto.requests.BookingRequestDTO;
-import ru.itmo.lab.dto.requests.PaymentRequestDTO;
-import ru.itmo.lab.dto.responses.BookingResponseDTO;
-import ru.itmo.lab.dto.responses.RoomResponseDTO;
-import ru.itmo.lab.dto.responses.UserResponseDTO;
 import ru.itmo.lab.kafka.BookingKafkaDTO;
 import ru.itmo.lab.kafka.BookingStatusKafkaDTO;
 import ru.itmo.lab.kafka.RoomKafkaDTO;
 import ru.itmo.lab.kafka.UserKafkaDTO;
-import ru.itmo.lab.models.Booking;
 import ru.itmo.lab.models.Room;
 import ru.itmo.lab.models.User;
-import ru.itmo.lab.models.enums.BookingStatus;
 import ru.itmo.lab.repositories.BookingRepository;
 import ru.itmo.lab.repositories.RoomRepository;
 import ru.itmo.lab.repositories.UserRepository;
 import ru.itmo.lab.utils.TransactionHelper;
-
-import java.awt.print.Book;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor

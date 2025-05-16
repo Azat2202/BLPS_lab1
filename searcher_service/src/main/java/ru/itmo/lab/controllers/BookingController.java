@@ -4,25 +4,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.itmo.lab.dto.requests.BookingRequestDTO;
-import ru.itmo.lab.dto.requests.PaymentRequestDTO;
-import ru.itmo.lab.dto.responses.BookingResponseDTO;
-import ru.itmo.lab.dto.responses.PaymentResponseDTO;
 import ru.itmo.lab.kafka.BookingKafkaDTO;
-import ru.itmo.lab.models.Booking;
-import ru.itmo.lab.models.Payment;
 import ru.itmo.lab.services.BookingService;
-import ru.itmo.lab.services.PaymentService;
-import ru.itmo.lab.services.Scheduler;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/booking")
@@ -30,6 +17,7 @@ import java.util.Optional;
 @Tag(name = "BookingController", description = "Контроллер для управлением заявками на бронирование")
 public class BookingController {
 	private final BookingService bookingService;
+	
 	
 	@PreAuthorize("hasAuthority('BOOK_ROOM')")
 	@PostMapping("/create")

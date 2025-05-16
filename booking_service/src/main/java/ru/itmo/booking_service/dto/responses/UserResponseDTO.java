@@ -1,4 +1,4 @@
-package ru.itmo.lab.dto.responses;
+package ru.itmo.booking_service.dto.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
