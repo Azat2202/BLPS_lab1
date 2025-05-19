@@ -14,6 +14,9 @@ import ru.itmo.lab.kafka.BookingKafkaDTO;
 import ru.itmo.lab.models.enums.BookingStatus;
 import ru.itmo.lab.services.BookingService;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/booking")
 @RequiredArgsConstructor
@@ -40,7 +43,7 @@ public class BookingController {
 	@Operation(summary = "Посмотреть статус бронирования", description = "Вовращает статус бронирования по его Id")
 	public ResponseEntity<?> checkBookingStatus(@Valid @PathVariable Long bookingId) {
 		try {
-			BookingStatus status =       bookingService.checkBookingStatus(bookingId);
+			BookingStatus status = bookingService.checkBookingStatus(bookingId);
 			BookingStatusResponseDTO responseDTO = new BookingStatusResponseDTO(bookingId, status);
 			return ResponseEntity.ok(responseDTO);
 		} catch (IllegalArgumentException exception) {
@@ -48,40 +51,14 @@ public class BookingController {
 		}
 	}
 	
-//	@PreAuthorize("hasAuthority('BOOK_ROOM')")
-//	@PostMapping("/payment_success")
-//	@Operation(summary = "Подтвердить бронирование", description = "Отправляет подтверждние бронирования на почту")
-//	public ResponseEntity<?> applyBooking(@Valid @RequestBody PaymentRequestDTO paymentRequestDTO) {
-//		try {
-//			scheduler.cancelPaymentExpiration(paymentRequestDTO);
-//
-//			BookingResponseDTO bookingResponseDTO = bookingService.doBookingSuccess(paymentRequestDTO);
-//
-//			return ResponseEntity.ok(bookingResponseDTO);
-//		} catch (IllegalArgumentException exception) {
-//			return ResponseEntity.badRequest().body(exception.getMessage());
-//		}
-//	}
-//
-//	@PreAuthorize("hasAuthority('VIEW_RESERVATIONS')")
-//	@GetMapping("/actual_reservations")
-//	@Operation(summary = "Посмотреть бронирования в выбранном отеле на ближайшие даты", description = "Отправляет подтверждние бронирования на почту")
-//	public ResponseEntity<?> check_bookings(@Valid @RequestParam String hotelName,
-//	                                        @Valid @RequestParam LocalDate checkinDate,
-//	                                        @Valid @RequestParam LocalDate checkoutDate) {
-//		List<BookingResponseDTO> bookings = bookingService.find(hotelName, checkinDate, checkoutDate);
-//		return ResponseEntity.ok(bookings);
-//	}
-//
-//	@PreAuthorize("hasAuthority('CANCEL_BOOKING')")
-//	@DeleteMapping("/cancel_booking")
-//	@Operation(summary = "Отменяет бронирование", description = "Отменяет бронирование. Доступно только администраторам системы")
-//	public ResponseEntity<?> cancel_booking(@Valid Long bookingId) {
-//		try {
-//			BookingResponseDTO booking = bookingService.cancel(bookingId);
-//			return ResponseEntity.ok(booking);
-//		} catch (IllegalArgumentException e) {
-//			return ResponseEntity.badRequest().body(e.getMessage());
-//		}
-//	}
+
+	@PreAuthorize("hasAuthority('VIEW_RESERVATIONS')")
+	@GetMapping("/actual_reservations")
+	@Operation(summary = "Посмотреть бронирования в выбранном отеле на ближайшие даты", description = "Отправляет подтверждние бронирования на почту")
+	public ResponseEntity<?> check_bookings(@Valid @RequestParam String hotelName,
+	                                        @Valid @RequestParam LocalDate checkinDate,
+	                                        @Valid @RequestParam LocalDate checkoutDate) {
+		List<BookingResponseDTO> bookings = bookingService.find(hotelName, checkinDate, checkoutDate);
+		return ResponseEntity.ok(bookings);
+	}
 }

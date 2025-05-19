@@ -13,6 +13,7 @@ import ru.itmo.booking_service.utils.TransactionHelper;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,24 +24,23 @@ public class PaymentService {
 	private final ModelMapper modelMapper;
 	private final TransactionHelper transactionHelper;
 	
-	public PaymentResponseDTO createPayment(BookingResponseDTO createdBooking) {
-		var status = transactionHelper.createTransaction("createPayment");
+	public void createPayment(Booking booking) {
+//		var status = transactionHelper.createTransaction("createPayment");
+//
+//        try {
+        Payment createdPayment = Payment.builder()
+		        .user(booking.getUser())
+                .amount(booking.getRoom().getPrice())
+                .status(PaymentStatus.CREATED)
+                .date(LocalDateTime.now())
+                .booking(booking)
+                .build();
 
-        try {
-            Payment createdPayment = Payment.builder()
-//                    .user(createdBooking.getUser())
-                    .amount(createdBooking.getRoom().getPrice())
-                    .status(PaymentStatus.CREATED)
-                    .date(LocalDate.now())
-                    .booking(modelMapper.map(createdBooking, Booking.class))
-                    .build();
-
-            createdPayment = paymentRepository.save(createdPayment);
-			transactionHelper.commit(status);
-            return modelMapper.map(createdPayment, PaymentResponseDTO.class);
-        } catch (Exception e) {
-			transactionHelper.rollback(status);
-            return null;
-        }
+        paymentRepository.save(createdPayment);
+//		transactionHelper.commit(status);
+//        } catch (Exception e) {
+//			transactionHelper.rollback(status);
+//            return null;
+//        }
     }
 }

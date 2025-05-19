@@ -2,6 +2,7 @@ package ru.itmo.booking_service.services;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 import ru.itmo.booking_service.dto.requests.PaymentRequestDTO;
@@ -10,7 +11,10 @@ import ru.itmo.booking_service.models.enums.PaymentStatus;
 import ru.itmo.booking_service.repositories.PaymentRepository;
 import ru.itmo.booking_service.utils.TransactionHelper;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -20,65 +24,17 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class Scheduler {
 	private final PaymentRepository paymentRepository;
-	private Map<Long, ScheduledFuture<?>> tasks = new ConcurrentHashMap<>();
-	private ThreadPoolTaskScheduler threadPoolTaskScheduler;
-	private final TransactionHelper transactionHelper;
 	
-	@PostConstruct
-	public void init() {
-		this.threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-		this.threadPoolTaskScheduler.setPoolSize(5);
-		this.threadPoolTaskScheduler.setThreadNamePrefix("PaymentScheduler-");
-		this.threadPoolTaskScheduler.initialize();
-	}
-	
-	public void schedulePaymentExpiration(Payment payment) {
-		System.out.println("Planning expiration of payment with ID " + payment.getId());
-		ScheduledFuture<?> scheduledTask = threadPoolTaskScheduler.schedule(
-				() -> {
-					var status = transactionHelper.createTransaction("schedulePaymentExpiration");
-					try {
-						synchronized (this) {
-                            if (!tasks.containsKey(payment.getId())) {
-                                return;
-                            }
-                            try {
-                                payment.setStatus(PaymentStatus.EXPIRED);
-                                paymentRepository.save(payment);
-                                System.out.println("Payment " + payment.getId() + " expired");
-                            } catch (Exception e) {
-                                System.out.println("Error with planning expired: " + e.getMessage());
-                            } finally {
-                                tasks.remove(payment.getId());
-                            }
-                        }
-						transactionHelper.commit(status);
-                    } catch (Exception e) {
-						transactionHelper.rollback(status);
-						System.out.println("Error with planning expiration: " + e.getMessage());
-                    }
-                },
-				triggerContext -> {
-					long delay = TimeUnit.SECONDS.toMillis(900);
-					return new Date(System.currentTimeMillis() + delay).toInstant();
-				}
-		);
+	@Scheduled(fixedDelay = 60000)
+	public void deleteExpiredPayments() {
+		List<Payment> unpaidPayments = paymentRepository
+				.findByStatusAndDateBefore(
+					PaymentStatus.CREATED,
+						LocalDateTime.now().minusMinutes(15)
+				);
 		
-		tasks.put(payment.getId(), scheduledTask);
-	}
-
-	
-	public void cancelPaymentExpiration(PaymentRequestDTO paymentRequestDTO) {
-		Long paymentId = paymentRequestDTO.getId();
-		
-		ScheduledFuture<?> scheduledTask = tasks.get(paymentId);
-		if (scheduledTask != null && !scheduledTask.isDone()) {
-			scheduledTask.cancel(true);
-			tasks.remove(paymentId);
-			System.out.println("Payment expiration canceled");
-			Payment payment = paymentRepository.findById(paymentId)
-					.orElseThrow(() -> new IllegalArgumentException("Payment not found"));
-			payment.setStatus(PaymentStatus.PAID);
+		for (Payment payment : unpaidPayments) {
+			payment.setStatus(PaymentStatus.EXPIRED);
 			paymentRepository.save(payment);
 		}
 	}
