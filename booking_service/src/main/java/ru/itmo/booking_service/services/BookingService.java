@@ -3,6 +3,7 @@ package ru.itmo.booking_service.services;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.booking_service.dto.responses.BookingResponseDTO;
 import ru.itmo.booking_service.models.Booking;
 import ru.itmo.booking_service.models.Room;
@@ -22,8 +23,9 @@ public class BookingService {
 	private final ModelMapper modelMapper;
 	private final PaymentService paymentService;
 	
+	@Transactional
 	public void createBooking(BookingKafkaDTO bookingKafkaDTO) {
-		System.out.println("Received Message: " + bookingKafkaDTO.toString());
+//		System.out.println("Received Message: " + bookingKafkaDTO.toString());
 		Booking booking;
 		if (!checkRoomBooking(bookingKafkaDTO.getBookingId())) {
 			changeStatus(bookingKafkaDTO.getBookingId(), BookingStatus.CANCELED);
@@ -38,9 +40,6 @@ public class BookingService {
 		
 		LocalDate startDate = booking.getStartDate();
 		LocalDate endDate = booking.getEndDate();
-//		var status = transactionHelper.createTransaction("checkRoomBooking");
-//
-//		try {
 		Room room = modelMapper.map(booking.getRoom(), Room.class);
 		
 		while (!startDate.isAfter(endDate)) {
@@ -56,28 +55,13 @@ public class BookingService {
 		}
 		return true;
 	}
-	
-//			transactionHelper.commit(status);
-//		} catch (Exception e) {
-//			transactionHelper.rollback(status);
-//			return false;
-//		}
-//
-	
+
 	public Booking changeStatus(Long bookingId, BookingStatus status) {
-		//		var status = transactionHelper.createTransaction("cancel");
-//
-//		try {
 		Booking booking = bookingRepository.findById(bookingId)
 				.orElseThrow(() -> new IllegalArgumentException("Booking not found"));
 		
 		booking.setStatus(status);
 		booking = bookingRepository.save(booking);
 		return booking;
-//			transactionHelper.commit(status);
-//		} catch (IllegalArgumentException e) {
-//			transactionHelper.rollback(status);
-//			return null;
-//		}
 	}
 }

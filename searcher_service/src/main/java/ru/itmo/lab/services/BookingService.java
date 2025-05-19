@@ -39,8 +39,6 @@ public class BookingService {
     private String topicName;
 
     public Long createBooking(BookingRequestDTO bookingRequestDTO) {
-//        var status = transactionHelper.createTransaction("createBooking");
-//        try {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
 
@@ -60,11 +58,6 @@ public class BookingService {
         BookingKafkaDTO bookingKafkaDTO = new BookingKafkaDTO(booking.getId(), user.getId());
         bookingProducer.send(topicName, bookingKafkaDTO);
         return booking.getId();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            transactionHelper.rollback(status);
-//            return null;
-//        }
     }
     
     public BookingStatus checkBookingStatus(@Valid Long bookingId) {
