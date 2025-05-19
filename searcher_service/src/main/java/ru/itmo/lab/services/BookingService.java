@@ -1,5 +1,6 @@
 package ru.itmo.lab.services;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,13 +8,13 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ru.itmo.lab.controllers.BookingController;
 import ru.itmo.lab.dto.requests.BookingRequestDTO;
 import ru.itmo.lab.kafka.BookingKafkaDTO;
-import ru.itmo.lab.kafka.BookingStatusKafkaDTO;
-import ru.itmo.lab.kafka.RoomKafkaDTO;
-import ru.itmo.lab.kafka.UserKafkaDTO;
+import ru.itmo.lab.models.Booking;
 import ru.itmo.lab.models.Room;
 import ru.itmo.lab.models.User;
+import ru.itmo.lab.models.enums.BookingStatus;
 import ru.itmo.lab.repositories.BookingRepository;
 import ru.itmo.lab.repositories.RoomRepository;
 import ru.itmo.lab.repositories.UserRepository;
@@ -26,36 +27,44 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
-    private final ModelMapper modelMapper;
     private final TransactionHelper transactionHelper;
-
+    
     @Value("${spring.kafka.producer.topic-name}")
     private String topicName;
 
-    public BookingKafkaDTO createBooking(BookingRequestDTO bookingRequestDTO) {
-        var status = transactionHelper.createTransaction("createBooking");
-        try {
-            String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+    public Long createBooking(BookingRequestDTO bookingRequestDTO) {
+//        var status = transactionHelper.createTransaction("createBooking");
+//        try {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
 
-            Room room = roomRepository.findById(bookingRequestDTO.getRoomId())
-                    .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+        Room room = roomRepository.findById(bookingRequestDTO.getRoomId())
+                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+        
+        Booking booking = new Booking();
+        
+        booking.setUser(user);
+        booking.setRoom(room);
+        booking.setStartDate(bookingRequestDTO.getStartDate());
+        booking.setEndDate(bookingRequestDTO.getEndDate());
+        booking.setStatus(BookingStatus.CREATED);
 
-            BookingKafkaDTO booking = BookingKafkaDTO.builder()
-                    .user(modelMapper.map(user, UserKafkaDTO.class))
-                    .room(modelMapper.map(room, RoomKafkaDTO.class))
-                    .startDate(bookingRequestDTO.getStartDate())
-                    .endDate(bookingRequestDTO.getEndDate())
-                    .status(BookingStatusKafkaDTO.CREATED)
-                    .build();
-
-            bookingProducer.send(topicName, user.getId(), booking);
-            return booking;
-        } catch (Exception e) {
-            e.printStackTrace();
-            transactionHelper.rollback(status);
-            return null;
-        }
+        booking = bookingRepository.save(booking);
+        
+        BookingKafkaDTO bookingKafkaDTO = new BookingKafkaDTO(booking.getId(), user.getId());
+        bookingProducer.send(topicName, bookingKafkaDTO);
+        return booking.getId();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            transactionHelper.rollback(status);
+//            return null;
+//        }
+    }
+    
+    public BookingStatus checkBookingStatus(@Valid Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+        
+        return booking.getStatus();
     }
 
 //    public boolean checkRoomBooking(BookingResponseDTO bookingResponseDTO) {

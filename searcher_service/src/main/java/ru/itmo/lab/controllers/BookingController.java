@@ -8,7 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.itmo.lab.dto.requests.BookingRequestDTO;
+import ru.itmo.lab.dto.responses.BookingResponseDTO;
+import ru.itmo.lab.dto.responses.BookingStatusResponseDTO;
 import ru.itmo.lab.kafka.BookingKafkaDTO;
+import ru.itmo.lab.models.enums.BookingStatus;
 import ru.itmo.lab.services.BookingService;
 
 @RestController
@@ -18,19 +21,33 @@ import ru.itmo.lab.services.BookingService;
 public class BookingController {
 	private final BookingService bookingService;
 	
-	
 	@PreAuthorize("hasAuthority('BOOK_ROOM')")
 	@PostMapping("/create")
 	@Operation(summary = "Создать бронирование", description = "Создаёт новую заявку на бронирование")
 	public ResponseEntity<?> createBooking(@Valid @RequestBody BookingRequestDTO bookingRequestDTO) {
 		try {
-			BookingKafkaDTO createdBooking = bookingService.createBooking(bookingRequestDTO);
-			return ResponseEntity.ok(createdBooking);
+			Long createdBookingId = bookingService.createBooking(bookingRequestDTO);
+			String answer = "Заявка создана, ожидайте подтверждения.";
+			BookingResponseDTO responseDTO = new BookingResponseDTO(createdBookingId, answer);
+			return ResponseEntity.ok(responseDTO);
 		} catch (IllegalArgumentException exception) {
 			return ResponseEntity.badRequest().body(exception.getMessage());
 		}
 	}
-
+	
+	@PreAuthorize("hasAuthority('BOOK_ROOM')")
+	@GetMapping("/booking_status/{bookingId}")
+	@Operation(summary = "Посмотреть статус бронирования", description = "Вовращает статус бронирования по его Id")
+	public ResponseEntity<?> checkBookingStatus(@Valid @PathVariable Long bookingId) {
+		try {
+			BookingStatus status =       bookingService.checkBookingStatus(bookingId);
+			BookingStatusResponseDTO responseDTO = new BookingStatusResponseDTO(bookingId, status);
+			return ResponseEntity.ok(responseDTO);
+		} catch (IllegalArgumentException exception) {
+			return ResponseEntity.badRequest().body(exception.getMessage());
+		}
+	}
+	
 //	@PreAuthorize("hasAuthority('BOOK_ROOM')")
 //	@PostMapping("/payment_success")
 //	@Operation(summary = "Подтвердить бронирование", description = "Отправляет подтверждние бронирования на почту")
