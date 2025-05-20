@@ -1,0 +1,1 @@
+SELECT setval('hotel_id_seq', (SELECT MAX(id) FROM hotel));
