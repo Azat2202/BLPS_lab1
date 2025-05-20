@@ -4,13 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.itmo.lab.models.enums.BookingStatus;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponseDTO {
-    private Long id;
+public class BookingStatusResponseDTO {
+    private Long bookingId;
 
-    private String username;
+    private BookingStatus status;
 }
+

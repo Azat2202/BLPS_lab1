@@ -1,18 +1,17 @@
 package ru.itmo.lab.dto.responses;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import ru.itmo.lab.models.Room;
-import ru.itmo.lab.models.User;
-import ru.itmo.lab.models.enums.BookingStatus;
-
-import java.time.LocalDate;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookingResponseDTO {
-	private Long id;
-	private UserResponseDTO user;
-	private RoomResponseDTO room;
-	private BookingStatus status;
-	private LocalDate startDate;
-	private LocalDate endDate;
+    private Long bookingId;
+
+    private String answer;
 }
+

@@ -1,4 +1,4 @@
-package ru.itmo.lab.models.enums;
+package ru.itmo.booking_service.models.enums;
 
 public enum BookingStatus {
 	CREATED,

@@ -1,4 +1,4 @@
-package ru.itmo.lab.services;
+package ru.itmo.booking_service.utils;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

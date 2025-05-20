@@ -1,14 +1,14 @@
-package ru.itmo.lab.models;
+package ru.itmo.booking_service.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.itmo.lab.models.enums.BookingStatus;
-import ru.itmo.lab.models.enums.PaymentStatus;
+import ru.itmo.booking_service.models.enums.PaymentStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -24,7 +24,7 @@ public class Payment {
 	private User user;
 	
 	@Column(nullable = false)
-	private LocalDate date;
+	private LocalDateTime date;
 	
 	@Column(nullable = false)
 	private Integer amount;
