@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<connector xmlns="https://jakarta.ee/xml/ns/jakartaee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/connector_2_1.xsd"
+           version="2.1">
+
+    <display-name>Resource Adapter</display-name>
+    <vendor-name>Aviasales Example</vendor-name>
+    <eis-type>Resource Adapter</eis-type>
+    <resourceadapter-version>1.0</resourceadapter-version>
+    <license>
+        <description>Sample License</description>
+        <license-required>false</license-required>
+    </license>
+
+    <resourceadapter>
+        <resourceadapter-class>ru.itmo.resource_adapter.impl.YandexMapsResourceAdapter</resourceadapter-class>
+
+        <outbound-resourceadapter>
+
+            <connection-definition>
+                <connectionfactory-interface>ru.itmo.resource_adapter.YandexMapsConnectionFactory</connectionfactory-interface>
+                <connectionfactory-impl-class>ru.itmo.resource_adapter.impl.YandexMapsConnectionFactoryImpl</connectionfactory-impl-class>
+                <connection-interface>ru.itmo.resource_adapter.YandexMapsConnection</connection-interface>
+                <connection-impl-class>ru.itmo.resource_adapter.impl.YandexMapsConnectionImpl</connection-impl-class>
+                <managedconnectionfactory-class>ru.itmo.resource_adapter.impl.YandexMapsManagedConnectionFactory</managedconnectionfactory-class>
+            </connection-definition>
+
+            <transaction-support>NoTransaction</transaction-support>
+
+        </outbound-resourceadapter>
+    </resourceadapter>
+</connector>

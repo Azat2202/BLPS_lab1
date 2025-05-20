@@ -11,7 +11,7 @@
 
     <groupId>ru.itmo</groupId>
     <artifactId>searcher_service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <name>Aviasales :: searcher_service</name>
 
     <dependencyManagement>
@@ -116,8 +116,16 @@
 
         <dependency>
             <groupId>ru.itmo</groupId>
+            <artifactId>resource_adapter</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>ru.itmo</groupId>
             <artifactId>shared_libs</artifactId>
             <version>1.3</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>
