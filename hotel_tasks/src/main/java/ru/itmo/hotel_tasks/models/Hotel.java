@@ -33,7 +33,7 @@ public class Hotel {
     @Column(nullable = false)
     private String address;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "hotel")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "hotel")
     private List<Room> rooms;
 
     @Column(nullable = false)

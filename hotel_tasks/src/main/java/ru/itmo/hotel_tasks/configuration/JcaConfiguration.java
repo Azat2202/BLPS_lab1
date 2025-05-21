@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import ru.itmo.hotel_tasks.jca.YandexMapsConnection;
 import ru.itmo.hotel_tasks.jca.YandexMapsConnectionFactory;
 import ru.itmo.hotel_tasks.jca.YandexMapsConnectionImpl;
+import ru.itmo.hotel_tasks.jca.YandexMapsResourceAdapter;
 
 @Configuration
 public class JcaConfiguration {
@@ -22,4 +23,5 @@ public class JcaConfiguration {
     public YandexMapsConnection yandexMapsConnection() {
         return new YandexMapsConnectionImpl(null, null, apiKey, yandexMapsApiKey);
     }
+
 }
