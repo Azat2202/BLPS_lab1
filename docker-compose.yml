@@ -77,6 +77,13 @@ services:
     profiles:
       - app
 
+  camunda:
+    container_name: camunda
+    image: camunda/camunda-bpm-platform:run-latest
+    ports:
+      - 8085:8080
+
+
 #  booking_service:
 #    container_name: booking_service
 #    build:

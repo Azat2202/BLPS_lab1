@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0vugzxj" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.35.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:process id="book-hotel" name="Aviasales" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:startEvent id="Event_0qb92wr" name="Seach hotel requested">
+      <bpmn:outgoing>Flow_1njdlgs</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="search-hotels" name="Search hotels" camunda:type="external" camunda:topic="search-hotels">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_0nj2u44</bpmn:incoming>
+      <bpmn:outgoing>Flow_0hg0pyx</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_13eb6hx" name="hotels">
+      <bpmn:incoming>Flow_0hg0pyx</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1njdlgs" sourceRef="Event_0qb92wr" targetRef="select-hotel-data" />
+    <bpmn:userTask id="select-hotel-data" name="Выбрать даты поездки, город и количество гостей" camunda:assignee="demo">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="hotel_name" label="Название отеля" type="string" />
+          <camunda:formField id="city" label="City" type="enum">
+            <camunda:value id="MOSCOW" name="Moscow" />
+            <camunda:value id="SAINT_PETERSBURG" name="Saint Petersburg" />
+            <camunda:value id="UFA" name="Ufa" />
+            <camunda:value id="KAZAN" name="Kazan" />
+            <camunda:value id="NOVOSIBIRSK" name="Novosibirsk" />
+            <camunda:value id="SOCHI" name="Sochi" />
+          </camunda:formField>
+          <camunda:formField id="people_count" label="Количество человек" type="long">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="checkin_date" label="Дата заезда" type="date">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="checkout_date" label="Дата выезда" type="date">
+            <camunda:validation>
+              <camunda:constraint name="required" />
+            </camunda:validation>
+          </camunda:formField>
+          <camunda:formField id="min_rating" label="Минимальный рейтинг отеля" type="long" />
+          <camunda:formField id="max_rating" label="Максимальный рейтинг отеля" type="long" />
+          <camunda:formField id="min_price" label="Минимальная цена отеля" type="long" />
+          <camunda:formField id="max_price" label="Максимальная цена отеля" type="long" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1njdlgs</bpmn:incoming>
+      <bpmn:outgoing>Flow_0nj2u44</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0nj2u44" sourceRef="select-hotel-data" targetRef="search-hotels" />
+    <bpmn:sequenceFlow id="Flow_0hg0pyx" sourceRef="search-hotels" targetRef="Event_13eb6hx" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="book-hotel">
+      <bpmndi:BPMNShape id="Event_0qb92wr_di" bpmnElement="Event_0qb92wr">
+        <dc:Bounds x="162" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="151" y="145" width="59" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0xmiabm_di" bpmnElement="search-hotels">
+        <dc:Bounds x="480" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_13eb6hx_di" bpmnElement="Event_13eb6hx">
+        <dc:Bounds x="872" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="875" y="78" width="30" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0hbxvx2_di" bpmnElement="select-hotel-data">
+        <dc:Bounds x="300" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1njdlgs_di" bpmnElement="Flow_1njdlgs">
+        <di:waypoint x="198" y="120" />
+        <di:waypoint x="300" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0nj2u44_di" bpmnElement="Flow_0nj2u44">
+        <di:waypoint x="400" y="120" />
+        <di:waypoint x="480" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0hg0pyx_di" bpmnElement="Flow_0hg0pyx">
+        <di:waypoint x="580" y="120" />
+        <di:waypoint x="872" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
