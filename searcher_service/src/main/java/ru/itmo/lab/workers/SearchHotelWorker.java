@@ -40,7 +40,6 @@ public class SearchHotelWorker {
                 .open();
     }
 
-    @SneakyThrows
     private void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
         String hotelName = externalTask.getVariable("hotel_name");
         City city = City.valueOf(externalTask.getVariable("city"));
