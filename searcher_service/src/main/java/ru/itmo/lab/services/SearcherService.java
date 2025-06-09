@@ -14,8 +14,10 @@ import ru.itmo.lab.dto.midleware.HotelRoom;
 import ru.itmo.lab.dto.responses.HotelResponseDTO;
 import ru.itmo.lab.dto.responses.RoomResponseDTO;
 import ru.itmo.lab.models.Hotel;
+import ru.itmo.lab.models.Room;
 import ru.itmo.lab.models.enums.City;
 import ru.itmo.lab.repositories.HotelRepository;
+import ru.itmo.lab.repositories.RoomRepository;
 import ru.itmo.lab.utils.TransactionHelper;
 
 import java.time.LocalDate;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SearcherService {
     private final HotelRepository hotelRepository;
+    private final RoomRepository roomRepository;
     private final ModelMapper modelMapper;
     private final TransactionHelper transactionHelper;
 
@@ -63,5 +66,19 @@ public class SearcherService {
                 .map(HotelRoom::getRoom)
                 .map(room -> modelMapper.map(room, RoomResponseDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    public RoomResponseDTO searchRoom(
+            Long roomId
+    ) {
+        var status = transactionHelper.createTransaction("searchRoom");
+        Room hotelRoom = null;
+        try {
+            hotelRoom = roomRepository.findById(roomId).get();
+            transactionHelper.commit(status);
+        } catch (Exception e) {
+            transactionHelper.rollback(status);
+        }
+        return modelMapper.map(hotelRoom, RoomResponseDTO.class);
     }
 }
