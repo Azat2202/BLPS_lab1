@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0vugzxj" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.35.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0vugzxj" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.35.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.23.0">
+  <bpmn:collaboration id="Collaboration_08o88mu">
+    <bpmn:participant id="Participant_1hubx6q" name="Клиент" processRef="book-hotel" />
+  </bpmn:collaboration>
   <bpmn:process id="book-hotel" name="Aviasales" isExecutable="true" camunda:historyTimeToLive="180">
-    <bpmn:startEvent id="Event_0qb92wr" name="Seach hotel requested">
-      <bpmn:outgoing>Flow_1njdlgs</bpmn:outgoing>
-    </bpmn:startEvent>
-    <bpmn:serviceTask id="search-hotels" name="Search hotels" camunda:type="external" camunda:topic="search-hotels">
-      <bpmn:extensionElements />
-      <bpmn:incoming>Flow_0nj2u44</bpmn:incoming>
-      <bpmn:outgoing>Flow_0hg0pyx</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:endEvent id="Event_13eb6hx" name="hotels">
-      <bpmn:incoming>Flow_0hg0pyx</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1njdlgs" sourceRef="Event_0qb92wr" targetRef="select-hotel-data" />
+    <bpmn:laneSet id="LaneSet_1rud875">
+      <bpmn:lane id="Lane_0bpv1lk">
+        <bpmn:flowNodeRef>search-hotels</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_1tpv6pe">
+        <bpmn:flowNodeRef>select-hotel-data</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_0qb92wr</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1rykxb4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_0rb1uep</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_077a7po</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_05y6dnu</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_1uxq6n1</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
     <bpmn:userTask id="select-hotel-data" name="Выбрать даты поездки, город и количество гостей" camunda:assignee="demo">
       <bpmn:extensionElements>
         <camunda:formData>
@@ -47,43 +52,175 @@
         </camunda:formData>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1njdlgs</bpmn:incoming>
-      <bpmn:outgoing>Flow_0nj2u44</bpmn:outgoing>
+      <bpmn:incoming>Flow_0l7hg39</bpmn:incoming>
+      <bpmn:incoming>Flow_0sasw3v</bpmn:incoming>
+      <bpmn:outgoing>Flow_1xn2hbi</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:sequenceFlow id="Flow_0nj2u44" sourceRef="select-hotel-data" targetRef="search-hotels" />
-    <bpmn:sequenceFlow id="Flow_0hg0pyx" sourceRef="search-hotels" targetRef="Event_13eb6hx" />
+    <bpmn:startEvent id="Event_0qb92wr" name="Seach hotel requested">
+      <bpmn:outgoing>Flow_1njdlgs</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="search-hotels" name="Search hotels" camunda:type="external" camunda:topic="search-hotels">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_1xn2hbi</bpmn:incoming>
+      <bpmn:outgoing>Flow_0kwujg1</bpmn:outgoing>
+      <bpmn:property id="Property_071xzdq" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataInputAssociation_0rauvui">
+        <bpmn:sourceRef>DataStoreReference_0o1tp5q</bpmn:sourceRef>
+        <bpmn:targetRef>Property_071xzdq</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:dataStoreReference id="DataStoreReference_0o1tp5q" name="Hotels">
+      <bpmn:extensionElements />
+    </bpmn:dataStoreReference>
+    <bpmn:endEvent id="Event_1rykxb4">
+      <bpmn:incoming>Flow_05fxzm7</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gateway_0rb1uep">
+      <bpmn:incoming>Flow_1s3u2vz</bpmn:incoming>
+      <bpmn:outgoing>Flow_0l7hg39</bpmn:outgoing>
+      <bpmn:outgoing>Flow_05fxzm7</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Activity_077a7po" name="По выбранным фильтрам отелей нет" camunda:assignee="demo">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="error" label="Ошибка:" type="string" defaultValue="По выбранным фильтрам отелей нет" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0aesqq1</bpmn:incoming>
+      <bpmn:outgoing>Flow_0sasw3v</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1njdlgs" sourceRef="Event_0qb92wr" targetRef="select-hotel-data" />
+    <bpmn:sequenceFlow id="Flow_0l7hg39" name="Повторный выбор отелей" sourceRef="Gateway_0rb1uep" targetRef="select-hotel-data">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{choose_new_hotels}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0sasw3v" sourceRef="Activity_077a7po" targetRef="select-hotel-data" />
+    <bpmn:sequenceFlow id="Flow_1xn2hbi" sourceRef="select-hotel-data" targetRef="search-hotels" />
+    <bpmn:sequenceFlow id="Flow_05fxzm7" name="Комната выбрана" sourceRef="Gateway_0rb1uep" targetRef="Event_1rykxb4">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not choose_new_hotels}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0qx8d1k" sourceRef="Gateway_1uxq6n1" targetRef="Activity_05y6dnu">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{hotel_names != ""}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0aesqq1" sourceRef="Gateway_1uxq6n1" targetRef="Activity_077a7po">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{hotel_names == ""}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0kwujg1" sourceRef="search-hotels" targetRef="Gateway_1uxq6n1" />
+    <bpmn:sequenceFlow id="Flow_1s3u2vz" sourceRef="Activity_05y6dnu" targetRef="Gateway_0rb1uep" />
+    <bpmn:userTask id="Activity_05y6dnu" name="Просмотр списка отелей" camunda:assignee="demo">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="hotel_names_show" label="Названия отелей" type="string" defaultValue="#{hotel_names}" />
+          <camunda:formField id="chosen_hotel_id" label="Выберите id отеля" type="long" defaultValue="1" />
+          <camunda:formField id="choose_new_hotels" label="Вы хотите выбрать отели снова?" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0qx8d1k</bpmn:incoming>
+      <bpmn:outgoing>Flow_1s3u2vz</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_1uxq6n1">
+      <bpmn:incoming>Flow_0kwujg1</bpmn:incoming>
+      <bpmn:outgoing>Flow_0qx8d1k</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0aesqq1</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="book-hotel">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_08o88mu">
+      <bpmndi:BPMNShape id="Participant_1hubx6q_di" bpmnElement="Participant_1hubx6q" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1170" height="650" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0bpv1lk_di" bpmnElement="Lane_0bpv1lk" isHorizontal="true">
+        <dc:Bounds x="190" y="465" width="1140" height="265" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_1tpv6pe_di" bpmnElement="Lane_1tpv6pe" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1140" height="385" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0hbxvx2_di" bpmnElement="select-hotel-data">
+        <dc:Bounds x="380" y="310" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0qb92wr_di" bpmnElement="Event_0qb92wr">
-        <dc:Bounds x="162" y="102" width="36" height="36" />
+        <dc:Bounds x="212" y="332" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="151" y="145" width="59" height="27" />
+          <dc:Bounds x="201" y="375" width="59" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0xmiabm_di" bpmnElement="search-hotels">
-        <dc:Bounds x="480" y="80" width="100" height="80" />
+        <dc:Bounds x="510" y="500" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_13eb6hx_di" bpmnElement="Event_13eb6hx">
-        <dc:Bounds x="872" y="102" width="36" height="36" />
+      <bpmndi:BPMNShape id="DataStoreReference_0o1tp5q_di" bpmnElement="DataStoreReference_0o1tp5q">
+        <dc:Bounds x="535" y="635" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="875" y="78" width="30" height="14" />
+          <dc:Bounds x="545" y="692" width="32" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0hbxvx2_di" bpmnElement="select-hotel-data">
-        <dc:Bounds x="300" y="80" width="100" height="80" />
+      <bpmndi:BPMNShape id="Event_1rykxb4_di" bpmnElement="Event_1rykxb4">
+        <dc:Bounds x="1102" y="332" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0rb1uep_di" bpmnElement="Gateway_0rb1uep" isMarkerVisible="true">
+        <dc:Bounds x="925" y="325" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_00pzwgb" bpmnElement="Activity_077a7po">
+        <dc:Bounds x="620" y="190" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0662lje_di" bpmnElement="Activity_05y6dnu">
+        <dc:Bounds x="770" y="310" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1uxq6n1_di" bpmnElement="Gateway_1uxq6n1" isMarkerVisible="true">
+        <dc:Bounds x="645" y="325" width="50" height="50" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1njdlgs_di" bpmnElement="Flow_1njdlgs">
-        <di:waypoint x="198" y="120" />
-        <di:waypoint x="300" y="120" />
+        <di:waypoint x="248" y="350" />
+        <di:waypoint x="380" y="350" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0nj2u44_di" bpmnElement="Flow_0nj2u44">
-        <di:waypoint x="400" y="120" />
-        <di:waypoint x="480" y="120" />
+      <bpmndi:BPMNEdge id="Flow_0l7hg39_di" bpmnElement="Flow_0l7hg39">
+        <di:waypoint x="950" y="325" />
+        <di:waypoint x="950" y="150" />
+        <di:waypoint x="430" y="150" />
+        <di:waypoint x="430" y="310" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="658" y="132" width="71" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0hg0pyx_di" bpmnElement="Flow_0hg0pyx">
-        <di:waypoint x="580" y="120" />
-        <di:waypoint x="872" y="120" />
+      <bpmndi:BPMNEdge id="Flow_0sasw3v_di" bpmnElement="Flow_0sasw3v">
+        <di:waypoint x="620" y="230" />
+        <di:waypoint x="460" y="230" />
+        <di:waypoint x="460" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xn2hbi_di" bpmnElement="Flow_1xn2hbi">
+        <di:waypoint x="480" y="350" />
+        <di:waypoint x="520" y="350" />
+        <di:waypoint x="552" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05fxzm7_di" bpmnElement="Flow_05fxzm7">
+        <di:waypoint x="975" y="350" />
+        <di:waypoint x="1102" y="350" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1017" y="332" width="45" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qx8d1k_di" bpmnElement="Flow_0qx8d1k">
+        <di:waypoint x="695" y="350" />
+        <di:waypoint x="770" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0aesqq1_di" bpmnElement="Flow_0aesqq1">
+        <di:waypoint x="670" y="325" />
+        <di:waypoint x="670" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0kwujg1_di" bpmnElement="Flow_0kwujg1">
+        <di:waypoint x="570" y="500" />
+        <di:waypoint x="570" y="350" />
+        <di:waypoint x="645" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1s3u2vz_di" bpmnElement="Flow_1s3u2vz">
+        <di:waypoint x="870" y="350" />
+        <di:waypoint x="925" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_0rauvui_di" bpmnElement="DataInputAssociation_0rauvui">
+        <di:waypoint x="560" y="635" />
+        <di:waypoint x="560" y="580" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
