@@ -17,7 +17,7 @@ public interface HotelRepository extends JpaRepository<Hotel, Long> {
             "JOIN h.rooms r " +
             "LEFT JOIN Feedback f ON f.hotel = h " +
             "LEFT JOIN Booking b ON b.room = r " +
-            "AND (:checkinDate <= b.startDate AND :checkoutDate >= b.endDate) " +
+            "AND (:checkinDate <= b.startDate AND :checkoutDate >= b.endDate AND b.status != 'EXPIRED') " +
             "WHERE (h.name ilike ('%' || :hotelName || '%')) " +
             "AND (h.city = :city) " +
             "AND (r.price >= :minPrice) " +

@@ -24,14 +24,16 @@ public class BookingService {
 	private final PaymentService paymentService;
 	
 	@Transactional
-	public void createBooking(BookingKafkaDTO bookingKafkaDTO) {
+	public boolean createBooking(BookingKafkaDTO bookingKafkaDTO) {
 //		System.out.println("Received Message: " + bookingKafkaDTO.toString());
 		Booking booking;
 		if (!checkRoomBooking(bookingKafkaDTO.getBookingId())) {
 			changeStatus(bookingKafkaDTO.getBookingId(), BookingStatus.CANCELED);
+			return false;
 		} else {
 			booking = changeStatus(bookingKafkaDTO.getBookingId(), BookingStatus.WAITING_PAYMENT);
-			paymentService.createPayment(booking);
+			paymentService.createPayment(booking.getId());
+			return true;
 		}
 	}
 	

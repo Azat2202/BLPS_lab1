@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class Scheduler {
 	private final PaymentRepository paymentRepository;
 	
-	@Scheduled(fixedDelay = 60000)
+//	@Scheduled(fixedDelay = 60000)
 	public void deleteExpiredPayments() {
 		List<Payment> unpaidPayments = paymentRepository
 				.findByStatusAndDateBefore(

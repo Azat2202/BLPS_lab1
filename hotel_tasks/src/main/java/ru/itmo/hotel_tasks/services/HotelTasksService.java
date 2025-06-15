@@ -19,7 +19,7 @@ public class HotelTasksService {
     private final HotelRepository hotelRepository;
     private Logger logger = LoggerFactory.getLogger(HotelTasksService.class);
 
-    @Scheduled(fixedRate = 60000, initialDelay = 0)
+//    @Scheduled(fixedRate = 60000, initialDelay = 0)
     public void generateNewHotels(){
         logger.info("Start generating new hotels");
         List<Hotel> hotels = yandexMapsConnection.getHotels();

@@ -39,7 +39,7 @@ public class BookingService {
     private String topicName;
 
     public Long createBooking(BookingRequestDTO bookingRequestDTO) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = bookingRequestDTO.getUsername();
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
 
         Room room = roomRepository.findById(bookingRequestDTO.getRoomId())
@@ -55,8 +55,8 @@ public class BookingService {
 
         booking = bookingRepository.save(booking);
         
-        BookingKafkaDTO bookingKafkaDTO = new BookingKafkaDTO(booking.getId(), user.getId());
-        bookingProducer.send(topicName, bookingKafkaDTO);
+//        BookingKafkaDTO bookingKafkaDTO = new BookingKafkaDTO(booking.getId(), user.getId());
+//        bookingProducer.send(topicName, bookingKafkaDTO);
         return booking.getId();
     }
     
